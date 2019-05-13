@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Coins
+  - Keys
+  - DeathObj
+  - Boxes
+  - Ground
+  - Traps
+  - Bullet
+  - VFX_Hit
+  - VFX_MuzzleFlash
+  - Zombie
+  - RedDoor
+  - Flip
+  - Trigger
+  - Health
+  - Check
+  - PlayerHit
+  - VFX_BoxExplode
+  - VFX_BloodExplosion
+  - VFX_Meat
+  - VFX_FireBall
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Player
+  - Environment
+  - Background
+  - PickUp
+  - Boxes
+  - Interactive
+  - Zombie
+  - Trap
+  - FireBall
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1959186269
+    locked: 0
+  - name: Lights
+    uniqueID: 450469387
+    locked: 0
+  - name: Hearb
+    uniqueID: 1403489711
+    locked: 0
+  - name: Boxes
+    uniqueID: 851814781
+    locked: 0
+  - name: Interactive
+    uniqueID: 206780233
+    locked: 0
+  - name: TrapsBehind
+    uniqueID: 3319219557
+    locked: 0
+  - name: PlatformBehind
+    uniqueID: 3191458927
+    locked: 0
+  - name: Ground
+    uniqueID: 3676523929
+    locked: 0
+  - name: PlatformInFront
+    uniqueID: 2993247613
+    locked: 0
+  - name: TrapsInFront
+    uniqueID: 746533183
+    locked: 0
+  - name: Zombie
+    uniqueID: 3373143809
+    locked: 0
+  - name: PickupObj
+    uniqueID: 21086487
+    locked: 0
+  - name: Player
+    uniqueID: 4029098539
+    locked: 0
+  - name: Acid
+    uniqueID: 1377695385
+    locked: 0
+  - name: Crystals
+    uniqueID: 2549538421
+    locked: 0
+  - name: Foreground
+    uniqueID: 3342982589
+    locked: 0
+  - name: UI
+    uniqueID: 1828001419
+    locked: 0
