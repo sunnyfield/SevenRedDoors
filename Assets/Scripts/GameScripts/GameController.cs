@@ -9,28 +9,28 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
-    [SerializeField]
+    //[SerializeField]
     private GameObject pausePanel;
-    [SerializeField]
+    //[SerializeField]
     private Button restartButton;
-    [SerializeField]
+    //[SerializeField]
     private Button quitButton;
-    [SerializeField]
+    //[SerializeField]
     private GameObject keyImageUI;
-    [SerializeField]
+    //[SerializeField]
     private Image damageTakeVingetteUI;
     private Coroutine damageTakeVingetteRoutine = null;
-    [SerializeField]
+    //[SerializeField]
     private Text gameOverText;
-    [SerializeField]
+    //[SerializeField]
     private Text winText;
-    [SerializeField]
+    //[SerializeField]
     private Text coinCountText;
-    [SerializeField]
+    //[SerializeField]
     private Image healthBar;
-    [SerializeField]
+    //[SerializeField]
     private Image ammoBar;
-    [SerializeField]
+    //[SerializeField]
 
     private GameObject controlButtons;
 

@@ -6,15 +6,10 @@ public class PlayerController : UnitScript
 {
     public static PlayerController instance;
     private CameraFollow cameraFollow;
-    [SerializeField]
     private Transform reloadFlag;
-    [SerializeField]
     private Transform reloadArrowIcon;
-    [SerializeField]
     private ProjectilesMove projectileClone;
-    [SerializeField]
     private ParticleSystem gunCaseParticleSystem;
-    [SerializeField]
     private Transform startPosition;
     private Coroutine inputDelayRoutine = null;
     private GameObject boxRef;
@@ -22,7 +17,7 @@ public class PlayerController : UnitScript
     public LayerMask whatToHit;
 
 
-    private float jumpForce = 9.5f;
+    private float jumpForce = 9.8f;
     private int blinkCount = 8;
 
     private uint ammo = 5;
@@ -118,10 +113,13 @@ public class PlayerController : UnitScript
 #endif
     }
 
+    
+
     public void Jump()
     {
         if (grounded && enableMovement)
         {
+            rigidBodyUnit2d.drag = 1f;
             anim.SetBool("ground", false);
             rigidBodyUnit2d.velocity += Vector2.up * jumpForce;
         }

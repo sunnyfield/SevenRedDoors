@@ -12,7 +12,7 @@ GameObject:
   m_Layer: 0
   m_Name: GroundCheckUpperLeft
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -24,8 +24,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1958497947249284844}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.57, y: -1.53, z: 0}
-  m_LocalScale: {x: 3.333333, y: 3.333333, z: 0}
+  m_LocalPosition: {x: 0, y: -1.47, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1958497948144402277}
   m_RootOrder: 1
@@ -135,7 +135,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -265868757
-  m_SortingLayer: 8
+  m_SortingLayer: 13
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b8aff422f1ce2434f98937416e279a9a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -161,12 +161,12 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 6200000, guid: 3d23c5765c3b79c49b88647916c74baa, type: 2}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!114 &1958497948144402275
@@ -186,11 +186,6 @@ MonoBehaviour:
     m_Bits: 13824
   sideHorizontal: 0
   enableMovement: 1
-  reloadFlag: {fileID: 0}
-  reloadArrowIcon: {fileID: 0}
-  projectileClone: {fileID: 0}
-  gunCaseParticleSystem: {fileID: 0}
-  startPosition: {fileID: 0}
   whatToHit:
     serializedVersion: 2
     m_Bits: 20480
@@ -256,7 +251,7 @@ Transform:
   m_GameObject: {fileID: 1958497948368483214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.34, y: -0.28, z: 0}
-  m_LocalScale: {x: 3.3, y: 3.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1958497948144402277}
   m_RootOrder: 4
@@ -4940,7 +4935,7 @@ ParticleSystem:
 --- !u!199 &1958497948368483212
 ParticleSystemRenderer:
   serializedVersion: 6
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4974,7 +4969,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 851814781
-  m_SortingLayer: 10
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -5011,7 +5006,7 @@ GameObject:
   m_Layer: 0
   m_Name: GroundCheckLowerRight
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -5024,7 +5019,7 @@ Transform:
   m_GameObject: {fileID: 1958497948381253467}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.42, y: -1.73, z: 0}
-  m_LocalScale: {x: 3.333333, y: 3.333333, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1958497948144402277}
   m_RootOrder: 2
@@ -5096,7 +5091,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -265868757
-  m_SortingLayer: 8
+  m_SortingLayer: 13
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: fe5594a18140bfa4494cd9c501518938, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5195,7 +5190,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -265868757
-  m_SortingLayer: 8
+  m_SortingLayer: 13
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3d358da9db45bda46ad02f71d7cf2849, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

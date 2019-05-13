@@ -12,6 +12,7 @@ public class UnitScript : MonoBehaviour
     public LayerMask whatIsGround;
     private Transform groundCheckLeft;
     private Transform groundCheckRight;
+    private float overrlapRadius = 0.1f;
     protected Coroutine takeDamageBlinkingRoutine = null;
 
 
@@ -27,6 +28,11 @@ public class UnitScript : MonoBehaviour
     [SerializeField]
     public bool enableMovement = true;
 
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
+    //    Gizmos.DrawSphere(groundCheckLeft.position, overrlapRadius);
+    //}
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
@@ -113,8 +119,15 @@ public class UnitScript : MonoBehaviour
             if (transform.right.x * sideHorizontal < 0)
                 Flip();
 
-            moveVector.x = (grounded) ? (sideHorizontal * maxSpeed) : (sideHorizontal * (maxSpeed * 0.8f));
+            moveVector.x = (grounded) ? (sideHorizontal * maxSpeed) : (sideHorizontal * (maxSpeed * 0.95f));
             moveVector.y = rigidBodyUnit2d.velocity.y;
+
+            if (!grounded)
+                rigidBodyUnit2d.drag = 1f;
+            else if (Mathf.Abs(moveVector.x) > 0 || moveVector.y > 0)
+                rigidBodyUnit2d.drag = 1f;
+            else if (Mathf.Abs(moveVector.x) <= 0.001)
+                rigidBodyUnit2d.drag = 1000000f;
 
             rigidBodyUnit2d.velocity = moveVector;
             anim.SetInteger("speedH", Mathf.Abs(sideHorizontal));
@@ -133,7 +146,8 @@ public class UnitScript : MonoBehaviour
 
     private void GroundCheck()
     {
-        grounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position, whatIsGround);
+        grounded = Physics2D.OverlapCircle(groundCheckLeft.position, overrlapRadius, whatIsGround);
+        //grounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position, whatIsGround);
         anim.SetBool("ground", grounded);
     }
 

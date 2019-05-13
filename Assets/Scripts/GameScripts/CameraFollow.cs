@@ -31,6 +31,7 @@ public class CameraFollow : MonoBehaviour
 
     private float topBorder, bottomBorder;
     private float leftBordet, rightBorder;
+    [HideInInspector]
     public float camLenght, camHeight;
 
     private float recoil;
