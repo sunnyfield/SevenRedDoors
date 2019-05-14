@@ -46,7 +46,6 @@ public class Pool : MonoBehaviour
             return pools[group];
 
         var pool = new GameObject("Pool_" + group.ToString()).AddComponent<Pool>();
-        pool.gameObject.SetActive(true);
         pool.objectToPool = objectsToPool[group];
 
         pool.GrowPool();
@@ -62,7 +61,7 @@ public class Pool : MonoBehaviour
 
             pooledObject.name += "_" + iterator;
             objects.Enqueue(pooledObject);
-            gameObject.SetActive(false);
+            pooledObject.SetActive(false);
             pooledObject.transform.SetParent(transform);           
         }
     }
