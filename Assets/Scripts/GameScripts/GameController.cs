@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
+
+    public GameObject meatPrefab;
+
     //[SerializeField]
     private GameObject pausePanel;
     //[SerializeField]
@@ -86,6 +89,13 @@ public class GameController : MonoBehaviour
         controlButtons = GameObject.Find("/Canvas/ControlButtons");
 
         Time.timeScale = 1f;
+
+        //GameObject obj = Pool.Pop(Group.Bullet);
+
+        //Pool Initialisation
+        //pool = Pool.InitializePool()
+        Pool.objectsToPool.Add(Group.VFX_Meat, new PoolableObject(meatPrefab, Group.VFX_Meat, 5));
+        Pool.GetPool(Group.VFX_Meat);
     }
 
     private void Update()
@@ -94,7 +104,7 @@ public class GameController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && !gameIsPaused && !gameOver)
             Pause();
         else if (Input.GetKeyDown(KeyCode.Escape) && gameIsPaused && !gameOver)
-            UnPause();
+            UnPause();       
     }
 
     public void CoinIncrease()

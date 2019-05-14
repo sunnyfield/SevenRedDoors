@@ -7,7 +7,6 @@ public class ObjectPoolItem
 {
     public GameObject objectToPool;
     public int amountToPool;
-
 }
 
 public class ObjectPooler : MonoBehaviour

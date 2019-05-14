@@ -10,8 +10,7 @@ public class UnitScript : MonoBehaviour
     protected Transform firePoint;
     protected SpriteRenderer unitsSprite;
     public LayerMask whatIsGround;
-    private Transform groundCheckLeft;
-    private Transform groundCheckRight;
+    private Transform groundCheckPoint;
     private float overrlapRadius = 0.1f;
     protected Coroutine takeDamageBlinkingRoutine = null;
 
@@ -52,9 +51,8 @@ public class UnitScript : MonoBehaviour
         rigidBodyUnit2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
-        groundCheckLeft = transform.Find("GroundCheckUpperLeft");
-        groundCheckRight = transform.Find("GroundCheckLowerRight");
-        firePoint = transform.Find("FirePoint");
+        groundCheckPoint = transform.GetChild(1);
+        firePoint = transform.GetChild(0);
     }
 
     public virtual void TakeDamage()
@@ -146,7 +144,7 @@ public class UnitScript : MonoBehaviour
 
     private void GroundCheck()
     {
-        grounded = Physics2D.OverlapCircle(groundCheckLeft.position, overrlapRadius, whatIsGround);
+        grounded = Physics2D.OverlapCircle(groundCheckPoint.position, overrlapRadius, whatIsGround);
         //grounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position, whatIsGround);
         anim.SetBool("ground", grounded);
     }

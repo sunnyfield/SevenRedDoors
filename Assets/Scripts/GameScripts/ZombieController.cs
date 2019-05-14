@@ -21,8 +21,6 @@ public class ZombieController : UnitScript, IZombie
     void Start()
     {
         UnitSetup();
-        meat = transform.GetChild(4).gameObject;
-        meat.SetActive(false);
         StartCoroutine(PassiveBehavior());
         maxSpeed = 1.5f;
         healthPoints = 3;
@@ -162,11 +160,14 @@ public class ZombieController : UnitScript, IZombie
             healthPoints = 0;
             anim.enabled = false;
             enableMovement = false;
+            unitsSprite.enabled = false;
             bloodExplosion = ObjectPooler.instance.GetPooledObject("VFX_BloodExplosion").GetComponent<ParticleSystem>();
             bloodExplosion.transform.position = transform.position;
             bloodExplosion.gameObject.SetActive(true);
-            unitsSprite.enabled = false;
-            meat.SetActive(true);
+            Pool.Pop(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
+            //meat = ObjectPooler.instance.GetPooledObject("VFX_Meat");
+            //meat.transform.position = transform.position - new Vector3(0.1f, 0.56f, 0f);
+            //meat.SetActive(true);
             Invoke("BloodExplosionReset", 1.5f);
             Destroy(gameObject, 2f);
         }

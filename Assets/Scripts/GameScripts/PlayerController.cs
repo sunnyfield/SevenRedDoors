@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : UnitScript
 {
     public static PlayerController instance;
+
     private CameraFollow cameraFollow;
     private Transform reloadFlag;
     private Transform reloadArrowIcon;
@@ -160,8 +161,7 @@ public class PlayerController : UnitScript
 
     public void Shoot()
     {
-        
-        if (ammo > 0 && grounded && !isAttack && enableMovement && rigidBodyUnit2d.velocity.magnitude == 0)
+        if (ammo > 0 && grounded && !isAttack && enableMovement && rigidBodyUnit2d.velocity.magnitude < 0.01f)
         {
             float projectileDist = 0f;
             float fireRange = 100f;

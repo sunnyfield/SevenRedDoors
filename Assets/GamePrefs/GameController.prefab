@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3850841727762294407}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -43,15 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d571721ca38f88a49b532a0ca7679da9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pausePanel: {fileID: 0}
-  restartButton: {fileID: 0}
-  quitButton: {fileID: 0}
-  keyImageUI: {fileID: 0}
-  damageTakeVingetteUI: {fileID: 0}
-  gameOverText: {fileID: 0}
-  winText: {fileID: 0}
-  coinCountText: {fileID: 0}
-  healthBar: {fileID: 0}
-  ammoBar: {fileID: 0}
-  coinCount: 0
+  meatPrefab: {fileID: 3257824193442040003, guid: 88b2ffee95ff53c4babbaec39aa9ec50,
+    type: 3}
   gameIsPaused: 0
