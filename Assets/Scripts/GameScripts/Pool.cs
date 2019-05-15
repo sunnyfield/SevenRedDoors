@@ -89,18 +89,11 @@ public class Pool : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
     private void GrowMonobehaviorPool()
     {
         for(int i = 0; i < monobehaviorPrefab.InitialPoolSize; i++)
         {
             AddPoolable();
-=======
-            pooledObject.name += "_" + iterator;
-            objects.Enqueue(pooledObject);
-            pooledObject.SetActive(false);
-            pooledObject.transform.SetParent(transform);           
->>>>>>> master
         }
     }
 
