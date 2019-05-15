@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Group {VFX_Meat, Bullet};
+public enum Group {VFX_Meat, VFX_BloodExplosion, Bullet};
 
 public struct PoolableObject
 {
@@ -21,13 +21,18 @@ public struct PoolableObject
 public class Pool : MonoBehaviour
 {
     private static Dictionary<Group, Pool> pools = new Dictionary<Group, Pool>();
+    private static Dictionary<PoolableMonobehavior, Pool> monobehaviorPools = new Dictionary<PoolableMonobehavior, Pool>(); 
+
     public static Dictionary<Group, PoolableObject> objectsToPool = new Dictionary<Group, PoolableObject>();
 
     private Queue<GameObject> objects = new Queue<GameObject>();
+    private Queue<PoolableMonobehavior> monobehaviors = new Queue<PoolableMonobehavior>();
 
     private PoolableObject objectToPool;
+    private PoolableMonobehavior monobehaviorPrefab;
 
     private int iterator = 0;
+    private int monobehaviorIterator = 0;
 
     private Pool()
     { }
@@ -54,17 +59,61 @@ public class Pool : MonoBehaviour
         return pool;
     }
 
+    public static Pool GetMonobehaviorPool(PoolableMonobehavior prefab)
+    {
+        if (monobehaviorPools.ContainsKey(prefab))
+            return monobehaviorPools[prefab];
+
+        var pool = new GameObject("MonobehaviorPool_" + (prefab as Component).name).AddComponent<Pool>();
+        pool.monobehaviorPrefab = prefab;
+
+        pool.GrowMonobehaviorPool();
+        monobehaviorPools.Add(prefab, pool);
+        return pool;
+    }
+
+    public T GetMonobehavior<T>() where T : PoolableMonobehavior
+    {
+        if (monobehaviors.Count == 0)
+            AddPoolable();
+
+        var pooledObject = monobehaviors.Dequeue();
+
+        return pooledObject as T;
+    }
+
     private void GrowPool()
     {
-        for(iterator = 0; iterator < objectToPool.initialPoolSize; iterator++)
+        for(int i = 0; i < objectToPool.initialPoolSize; i++)
         {
-            var pooledObject = Instantiate(objectToPool.prefab);
-
-            pooledObject.name += "_" + iterator;
-            objects.Enqueue(pooledObject);
-            gameObject.SetActive(false);
-            pooledObject.transform.SetParent(transform);           
+            AddObject();           
         }
+    }
+
+    private void GrowMonobehaviorPool()
+    {
+        for(int i = 0; i < monobehaviorPrefab.InitialPoolSize; i++)
+        {
+            AddPoolable();
+        }
+    }
+
+    private void AddMonobehaviorToAvaliable(PoolableMonobehavior pooledObject)
+    {
+        monobehaviors.Enqueue(pooledObject);
+        if (!pooledObject.gameObject.activeInHierarchy)
+            (pooledObject as Component).transform.SetParent(transform);
+    }
+
+    private void AddPoolable()
+    {
+        var pooledObject = Instantiate(monobehaviorPrefab) as PoolableMonobehavior;
+        (pooledObject as Component).gameObject.name += "_" + monobehaviorIterator;
+
+        pooledObject.OnDestroyMethod = () => AddMonobehaviorToAvaliable(pooledObject);
+
+        (pooledObject as Component).gameObject.SetActive(false);
+        monobehaviorIterator++;
     }
 
     private void AddObject()
@@ -78,7 +127,7 @@ public class Pool : MonoBehaviour
         iterator++;
     }
 
-    public static GameObject Pop(Group group, bool enable = true)
+    public static GameObject Pull(Group group, bool enable = true)
     {
         var pool = GetPool(group);
         if (pool.objects.Count == 0)
@@ -89,7 +138,7 @@ public class Pool : MonoBehaviour
         return pooledObject;
     }
 
-    public static GameObject Pop(Group group, Vector3 position, Quaternion rotation, bool enable = true)
+    public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, bool enable = true)
     {
         var pool = GetPool(group);
         if (pool.objects.Count == 0)
@@ -102,7 +151,7 @@ public class Pool : MonoBehaviour
         return pooledObject;
     }
 
-    public static GameObject Pop(Group group, Transform parent, Vector3 relativePosition, Quaternion relativeRotation, bool enable = true)
+    public static GameObject Pull(Group group, Transform parent, Vector3 relativePosition, Quaternion relativeRotation, bool enable = true)
     {
         var pool = GetPool(group);
         if (pool.objects.Count == 0)
@@ -113,6 +162,21 @@ public class Pool : MonoBehaviour
         pooledObject.transform.localPosition = relativePosition;
         pooledObject.transform.localRotation = relativeRotation;
         pooledObject.SetActive(enable);
+        return pooledObject;
+    }
+
+    public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, float existTime)
+    {
+        var pool = GetPool(group);
+        if (pool.objects.Count == 0)
+            pool.AddObject();
+
+        var pooledObject = pool.objects.Dequeue();
+        pooledObject.transform.localPosition = position;
+        pooledObject.transform.localRotation = rotation;
+        pooledObject.SetActive(true);
+
+        pool.StartCoroutine(pool.DelayedPushCoroutine(pooledObject, existTime));
         return pooledObject;
     }
 

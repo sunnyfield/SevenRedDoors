@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     public static GameController instance;
 
     public GameObject meatPrefab;
+    public GameObject bloodPrefab;
 
     //[SerializeField]
     private GameObject pausePanel;
@@ -96,6 +97,8 @@ public class GameController : MonoBehaviour
         //pool = Pool.InitializePool()
         Pool.objectsToPool.Add(Group.VFX_Meat, new PoolableObject(meatPrefab, Group.VFX_Meat, 5));
         Pool.GetPool(Group.VFX_Meat);
+        Pool.objectsToPool.Add(Group.VFX_BloodExplosion, new PoolableObject(bloodPrefab, Group.VFX_BloodExplosion, 2));
+        Pool.GetPool(Group.VFX_BloodExplosion);
     }
 
     private void Update()

@@ -6,10 +6,7 @@ public class ZombieController : UnitScript, IZombie
 {
     public LayerMask whatToHit;
     private Vector2 startPosition;
-    [SerializeField]
-    private ParticleSystem bloodExplosion;
-    [SerializeField]
-    private GameObject meat;
+
     private float seeDistance = 4f;
     [SerializeField]
     private float leftBorder;
@@ -161,19 +158,9 @@ public class ZombieController : UnitScript, IZombie
             anim.enabled = false;
             enableMovement = false;
             unitsSprite.enabled = false;
-            bloodExplosion = ObjectPooler.instance.GetPooledObject("VFX_BloodExplosion").GetComponent<ParticleSystem>();
-            bloodExplosion.transform.position = transform.position;
-            bloodExplosion.gameObject.SetActive(true);
-            Pool.Pop(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
-            //meat = ObjectPooler.instance.GetPooledObject("VFX_Meat");
-            //meat.transform.position = transform.position - new Vector3(0.1f, 0.56f, 0f);
-            //meat.SetActive(true);
-            Invoke("BloodExplosionReset", 1.5f);
-            Destroy(gameObject, 2f);
+            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
+            Destroy(gameObject);
         }
-    }
-    private void BloodExplosionReset()
-    {
-        bloodExplosion.gameObject.SetActive(false);
     }
 }
