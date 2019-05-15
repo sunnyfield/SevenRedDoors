@@ -176,7 +176,7 @@ public class ZombieBigController : UnitScript, IZombie
 
     private IEnumerator RushAttack (float playerPositionHorizontal)
     {
-        gameObject.layer = 15;
+        gameObject.layer = 17;
         float distanceToRush = Mathf.Abs(playerPositionHorizontal - transform.position.x);
         while (distanceToRush >= 2.3f)
         {

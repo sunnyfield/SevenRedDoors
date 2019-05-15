@@ -11,14 +11,16 @@ public class PlayerController : UnitScript
     private Transform reloadArrowIcon;
     private ProjectilesMove projectileClone;
     private ParticleSystem gunCaseParticleSystem;
-    private Transform startPosition;
+    private Transform startPoint;
+    [SerializeField]
+    private Vector3 respawnPosition;
     private Coroutine inputDelayRoutine = null;
     private GameObject boxRef;
 
     public LayerMask whatToHit;
 
 
-    private float jumpForce = 9.8f;
+    private float jumpForce = 10.3f;
     private int blinkCount = 8;
 
     private uint ammo = 5;
@@ -40,18 +42,21 @@ public class PlayerController : UnitScript
     private void Start()
     {
         UnitSetup();
-        gunCaseParticleSystem = transform.Find("VFX_ GunCase").GetComponent<ParticleSystem>();
+        gunCaseParticleSystem = transform.GetChild(3).GetComponent<ParticleSystem>();
 
-        reloadFlag = transform.Find("ReloadAmmoSprite");
-        reloadArrowIcon = GameObject.Find("/Scene/Player/ReloadAmmoSprite/ReloadFlagSprite").GetComponent<Transform>();
+        reloadFlag = transform.GetChild(2);
+        reloadArrowIcon = reloadFlag.GetChild(0);
         reloadFlag.gameObject.SetActive(false);
 
-        startPosition = GameObject.Find("/Scene/StartPosition").GetComponent<Transform>();
+        startPoint = GameObject.Find("/Scene/StartPosition").GetComponent<Transform>();
 
         healthPoints = 3;
         lerpSpeed = 40f;
 
         cameraFollow = CameraFollow.instance;
+        transform.position = startPoint.position;
+        transform.rotation = startPoint.rotation;
+        respawnPosition = startPoint.position;
     }
 
     private void FixedUpdate()
@@ -71,29 +76,30 @@ public class PlayerController : UnitScript
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Traps"))
+        if (collision.CompareTag("Traps"))
         {
             TakeDamage();
             Bounce(collision);
         }
-
-        else if (collision.gameObject.CompareTag("Coins"))
+        else if (collision.CompareTag("Coins"))
             PickUpCoin(collision.gameObject);
 
-        else if (collision.gameObject.CompareTag("Keys"))
+        else if (collision.CompareTag("Keys"))
             PickUpKey(collision.gameObject);
 
-        else if (collision.gameObject.CompareTag("Health"))
+        else if (collision.CompareTag("Health"))
             PickUpHealth(collision.gameObject);
 
-        else if (collision.gameObject.CompareTag("RedDoor"))
+        else if (collision.CompareTag("RedDoor"))
             GameController.instance.GameWinCheck();
 
-        else if (collision.gameObject.CompareTag("DeathObj"))
+        else if (collision.CompareTag("DeathObj"))
         {
             TakeDamage();
-            MoveToStart();
+            Respawn();
         }
+        else if (collision.CompareTag("CheckPoint"))
+            respawnPosition = collision.gameObject.transform.GetChild(0).position;
     }
 
     private void Update()
@@ -131,33 +137,42 @@ public class PlayerController : UnitScript
     {
         ContactPoint2D point = collision.GetContact(0);
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
-
-            SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
-            rigidBodyUnit2d.velocity = new Vector2(point.normal.x * 12f, rigidBodyUnit2d.velocity.y);
+        SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
+        rigidBodyUnit2d.velocity = new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
     }
 
     private void Bounce(Collider2D collider)
     {
         float x;
         SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
-        x = rigidBodyUnit2d.velocity.x;
-        if (Mathf.Abs(x) > 0f)
-            rigidBodyUnit2d.velocity = new Vector2( -Mathf.Sign(x) * (x / x) * 5f, rigidBodyUnit2d.velocity.y);
+        Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
+        if(rb2d != null)
+        {
+            rigidBodyUnit2d.velocity = new Vector2(rb2d.velocity.x * 2.5f, rigidBodyUnit2d.velocity.y);
+        }
+        else
+        {
+            x = rigidBodyUnit2d.velocity.x;
+            if (Mathf.Abs(x) > 0f)
+                rigidBodyUnit2d.velocity = new Vector2(-Mathf.Sign(x) * (x / x) * 5f, rigidBodyUnit2d.velocity.y);
+        }
+        
     }
 
     private IEnumerator InputDelay(float delay)
     {    
         enableMovement = false;
+        rigidBodyUnit2d.drag = 1f;
         yield return new WaitForSeconds(delay);
         enableMovement = true;
         inputDelayRoutine = null;
     }
 
-    private void MoveToStart()
+    private void Respawn()
     {
         SingleRoutineStart(ref inputDelayRoutine, InputDelay(1.3f));
         rigidBodyUnit2d.velocity = Vector2.zero;
-        transform.position = startPosition.position;       
+        transform.position = respawnPosition;       
     }
 
     public void Shoot()
@@ -169,7 +184,7 @@ public class PlayerController : UnitScript
 
             fireRange = cameraFollow.camLenght/2f + firePoint.right.x * (cameraFollow.transform.position.x - transform.position.x) - 0.4f;
 
-            RaycastHit2D hit = Physics2D.Raycast(firePoint.position, firePoint.right, fireRange);
+            RaycastHit2D hit = Physics2D.Raycast(firePoint.position, firePoint.right, fireRange, whatToHit);
             if (hit)
             {
                 if (hit.transform.CompareTag("Boxes"))
@@ -191,6 +206,7 @@ public class PlayerController : UnitScript
             GameController.instance.AmmoBarDecreaseUI();
 
             anim.SetTrigger("shoot");
+            isAttack = true;
             StartCoroutine(CameraFollow.instance.Recoil());
 
             projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();

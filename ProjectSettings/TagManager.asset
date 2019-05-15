@@ -10,9 +10,6 @@ TagManager:
   - Boxes
   - Ground
   - Traps
-  - Bullet
-  - VFX_Hit
-  - VFX_MuzzleFlash
   - Zombie
   - RedDoor
   - Flip
@@ -20,10 +17,10 @@ TagManager:
   - Health
   - Check
   - PlayerHit
-  - VFX_BoxExplode
-  - VFX_BloodExplosion
+  - CheckPoint
+  - Platform
   - VFX_Meat
-  - VFX_FireBall
+  - VFX_BloodExplosion
   layers:
   - Default
   - TransparentFX
@@ -42,7 +39,7 @@ TagManager:
   - Zombie
   - Trap
   - FireBall
-  - 
+  - CollidingZombie
   - 
   - 
   - 
@@ -91,11 +88,11 @@ TagManager:
   - name: TrapsInFront
     uniqueID: 746533183
     locked: 0
-  - name: Zombie
-    uniqueID: 3373143809
-    locked: 0
   - name: PickupObj
     uniqueID: 21086487
+    locked: 0
+  - name: Zombie
+    uniqueID: 3373143809
     locked: 0
   - name: Player
     uniqueID: 4029098539
