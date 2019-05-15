@@ -77,24 +77,6 @@ public class ZombieBigController : UnitScript, IZombie
         return directionToPlayer;
     }
 
-    /*private IEnumerator AIcontrol()
-    {
-        Vector2 directionToPlayer;
-        float distanceToPlayer;
-        sideHorizontal = 1;
-
-        while (gameObject.activeInHierarchy)
-        {
-            directionToPlayer = VectorToPlayer();
-            distanceToPlayer = directionToPlayer.magnitude;
-
-            if (distanceToPlayer < seeDistance)
-                    yield return StartCoroutine(AgressiveBehavior(directionToPlayer, distanceToPlayer));
-            else
-                    yield return StartCoroutine(PassiveBehavior(directionToPlayer, distanceToPlayer));
-        } //while
-    }*/
-
     private IEnumerator PassiveBehavior()
     {
         Vector2 directionToPlayer;
@@ -225,20 +207,10 @@ public class ZombieBigController : UnitScript, IZombie
         if (healthPoints != 0)
         {
             healthPoints = 0;
-            anim.enabled = false;
-            enableMovement = false;
-            bloodExplosion = ObjectPooler.instance.GetPooledObject("VFX_BloodExplosion").GetComponent<ParticleSystem>();
-            bloodExplosion.transform.position = transform.position;
-            unitsSprite.enabled = false;
-            meat.SetActive(true);
-            bloodExplosion.gameObject.SetActive(true);
-            Invoke("BloodExplosionReset", 1.5f);
-            Destroy(gameObject, 2f);
+            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.62f, 0f), Quaternion.identity);
+            Destroy(gameObject);
         }
     }
 
-    private void BloodExplosionReset()
-    {
-        bloodExplosion.gameObject.SetActive(false);
-    }
 }

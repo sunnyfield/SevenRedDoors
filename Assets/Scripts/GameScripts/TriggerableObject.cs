@@ -14,7 +14,7 @@ public class TriggerableObject : MonoBehaviour, ITriggerable
 
     private void Start()
     {
-        platform = GameObject.Find("/Scene/InteractiveObj/Bridge").GetComponent<Transform>();
+        platform = transform.GetChild(1);
     }
 
 

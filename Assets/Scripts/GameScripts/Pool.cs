@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Group {VFX_Meat, VFX_BloodExplosion, Bullet};
+public enum Group {VFX_Meat, VFX_BloodExplosion, VFX_BoxCrush, Projectile, VFX_Muzzle, VFX_Hit, Fireball};
 
 public struct PoolableObject
 {
@@ -20,65 +20,35 @@ public struct PoolableObject
 
 public class Pool : MonoBehaviour
 {
-    private static Dictionary<Group, Pool> pools = new Dictionary<Group, Pool>();
-    private static Dictionary<PoolableMonobehavior, Pool> monobehaviorPools = new Dictionary<PoolableMonobehavior, Pool>(); 
+    private static int groupCount = System.Enum.GetValues(typeof(Group)).Length;
+    private static Pool[] pools = new Pool[groupCount];
 
-    public static Dictionary<Group, PoolableObject> objectsToPool = new Dictionary<Group, PoolableObject>();
+    public static PoolableObject[] objectsToPool = new PoolableObject[groupCount];
 
     private Queue<GameObject> objects = new Queue<GameObject>();
-    private Queue<PoolableMonobehavior> monobehaviors = new Queue<PoolableMonobehavior>();
-
+    
     private PoolableObject objectToPool;
-    private PoolableMonobehavior monobehaviorPrefab;
-
+    
     private int iterator = 0;
-    private int monobehaviorIterator = 0;
 
     private Pool()
     { }
 
-    //public static Pool CreatePool(PoolableObject poolableObject)
-    //{
-    //    var pool = new Pool();
-    //    objectsToPool.Add(poolableObject.group, poolableObject);
-    //    pool = GetPool(poolableObject.group);
-    //    return pool;
-    //}
-
     public static Pool GetPool(Group group)
     {
-        if (pools.ContainsKey(group))
-            return pools[group];
-
-        var pool = new GameObject("Pool_" + group.ToString()).AddComponent<Pool>();
-        pool.objectToPool = objectsToPool[group];
-
-        pool.GrowPool();
-        pools.Add(group, pool);
-        return pool;
+        return pools[(int)group];
     }
 
-    public static Pool GetMonobehaviorPool(PoolableMonobehavior prefab)
+    public static void CreatePools()
     {
-        if (monobehaviorPools.ContainsKey(prefab))
-            return monobehaviorPools[prefab];
+        for (int i = 0; i < pools.Length; i++)
+        {
+            var pool = new GameObject("Pool_" + objectsToPool[i].group.ToString()).AddComponent<Pool>();
+            pool.objectToPool = objectsToPool[i];
 
-        var pool = new GameObject("MonobehaviorPool_" + (prefab as Component).name).AddComponent<Pool>();
-        pool.monobehaviorPrefab = prefab;
-
-        pool.GrowMonobehaviorPool();
-        monobehaviorPools.Add(prefab, pool);
-        return pool;
-    }
-
-    public T GetMonobehavior<T>() where T : PoolableMonobehavior
-    {
-        if (monobehaviors.Count == 0)
-            AddPoolable();
-
-        var pooledObject = monobehaviors.Dequeue();
-
-        return pooledObject as T;
+            pool.GrowPool();
+            pools[i] = pool;
+        }
     }
 
     private void GrowPool()
@@ -87,32 +57,6 @@ public class Pool : MonoBehaviour
         {
             AddObject();           
         }
-    }
-
-    private void GrowMonobehaviorPool()
-    {
-        for(int i = 0; i < monobehaviorPrefab.InitialPoolSize; i++)
-        {
-            AddPoolable();
-        }
-    }
-
-    private void AddMonobehaviorToAvaliable(PoolableMonobehavior pooledObject)
-    {
-        monobehaviors.Enqueue(pooledObject);
-        if (!pooledObject.gameObject.activeInHierarchy)
-            (pooledObject as Component).transform.SetParent(transform);
-    }
-
-    private void AddPoolable()
-    {
-        var pooledObject = Instantiate(monobehaviorPrefab) as PoolableMonobehavior;
-        (pooledObject as Component).gameObject.name += "_" + monobehaviorIterator;
-
-        pooledObject.OnDestroyMethod = () => AddMonobehaviorToAvaliable(pooledObject);
-
-        (pooledObject as Component).gameObject.SetActive(false);
-        monobehaviorIterator++;
     }
 
     private void AddObject()

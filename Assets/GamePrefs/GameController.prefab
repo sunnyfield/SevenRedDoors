@@ -43,6 +43,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d571721ca38f88a49b532a0ca7679da9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meatPrefab: {fileID: 3257824193442040003, guid: 88b2ffee95ff53c4babbaec39aa9ec50,
-    type: 3}
+  poolablePrefabs:
+  - {fileID: 3257824193442040003, guid: 88b2ffee95ff53c4babbaec39aa9ec50, type: 3}
+  - {fileID: 4425551707498684613, guid: be64a70932dd71f42935cb0c2859b02f, type: 3}
+  - {fileID: 5300313228506876986, guid: c0c31d46a49b14e48a231fd5c76c0982, type: 3}
+  - {fileID: 923392236223138573, guid: 0d73d0657e52c5347b8f68af2cb6894e, type: 3}
+  - {fileID: 7782959485963823606, guid: 23a5f7836c50a8349b2bece040c762dc, type: 3}
+  - {fileID: 7242481955628485680, guid: f59907ce69b50fe41adefdd3e9c21297, type: 3}
+  - {fileID: 923392236223138573, guid: b10bbf40ce5f6ea4aa245634ed9e47cd, type: 3}
   gameIsPaused: 0

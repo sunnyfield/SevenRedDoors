@@ -28,9 +28,18 @@ public class FlyController : UnitScript, IZombie
         startPosition = transform.position;
         topBorder = Mathf.Infinity;
         bottomBorder = -Mathf.Infinity;
-    //leftBorder = -Mathf.Infinity;
-    //rightBorder = Mathf.Infinity;
-}
+        //leftBorder = -Mathf.Infinity;
+        //rightBorder = Mathf.Infinity;
+    }
+
+    protected override void UnitSetup()
+    {
+        unitsSprite = GetComponent<SpriteRenderer>();
+        rigidBodyUnit2d = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+
+        firePoint = transform.GetChild(0);
+    }
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     { }
@@ -134,13 +143,7 @@ public class FlyController : UnitScript, IZombie
                 {
                     anim.SetTrigger("shoot");
                     
-                    projectileClone = ObjectPooler.instance.GetPooledObject("VFX_FireBall");
-                    if (projectileClone != null)
-                    {
-                        projectileClone.transform.position = firePoint.position;
-                        projectileClone.transform.rotation = firePoint.rotation;
-                        projectileClone.SetActive(true);
-                    }
+                    Pool.Pull(Group.Fireball, firePoint.position, firePoint.rotation);
                     timer = 0;
                 }
             }
@@ -229,18 +232,8 @@ public class FlyController : UnitScript, IZombie
         if (healthPoints != 0)
         {
             healthPoints = 0;
-            anim.enabled = false;
-            enableMovement = false;
-            bloodExplosion = ObjectPooler.instance.GetPooledObject("VFX_BloodExplosion").GetComponent<ParticleSystem>();
-            bloodExplosion.transform.position = transform.position;
-            bloodExplosion.gameObject.SetActive(true);
-            unitsSprite.enabled = false;
-            Invoke("BloodExplosionReset", 1.5f);
-            Destroy(gameObject, 2f);
+            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
+            Destroy(gameObject);
         }
-    }
-    private void BloodExplosionReset()
-    {
-        bloodExplosion.gameObject.SetActive(false);
     }
 }

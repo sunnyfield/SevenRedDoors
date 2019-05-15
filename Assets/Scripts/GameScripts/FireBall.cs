@@ -17,9 +17,9 @@ public class FireBall : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.gameObject.GetComponent<PlayerController>().TakeDamage();
-            gameObject.SetActive(false);
+            Pool.Push(Group.Fireball, gameObject);
         }
         else
-            gameObject.SetActive(false);
+            Pool.Push(Group.Fireball, gameObject);
     }
 }

@@ -11,7 +11,7 @@ public class UnitScript : MonoBehaviour
     protected SpriteRenderer unitsSprite;
     public LayerMask whatIsGround;
     private Transform groundCheckPoint;
-    private float overrlapRadius = 0.1f;
+    private float overrlapRadius = 0.08f;
     protected Coroutine takeDamageBlinkingRoutine = null;
 
 
@@ -22,7 +22,7 @@ public class UnitScript : MonoBehaviour
     public int sideHorizontal;
 
     protected byte healthPoints;
-
+    [SerializeField]
     protected bool grounded = false;
     [SerializeField]
     public bool enableMovement = true;
@@ -35,17 +35,15 @@ public class UnitScript : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Boxes"))
-            GroundCheck();
+            Invoke("GroundCheck", 0.1f);
     }
 
     protected virtual void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Boxes"))
-            GroundCheck();
+            Invoke("GroundCheck", 0.1f);
     }
 
-    protected void UnitSetup()
+    protected virtual void UnitSetup()
     {
         unitsSprite = GetComponent<SpriteRenderer>();
         rigidBodyUnit2d = GetComponent<Rigidbody2D>();
@@ -145,7 +143,6 @@ public class UnitScript : MonoBehaviour
     private void GroundCheck()
     {
         grounded = Physics2D.OverlapCircle(groundCheckPoint.position, overrlapRadius, whatIsGround);
-        //grounded = Physics2D.OverlapArea(groundCheckLeft.position, groundCheckRight.position, whatIsGround);
         anim.SetBool("ground", grounded);
     }
 

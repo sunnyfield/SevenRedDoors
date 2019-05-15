@@ -154,10 +154,7 @@ public class ZombieController : UnitScript, IZombie
     {
         if (healthPoints != 0)
         {
-            healthPoints = 0;
-            anim.enabled = false;
-            enableMovement = false;
-            unitsSprite.enabled = false;
+            healthPoints = 0;     
             Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
             Pool.Pull(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
             Destroy(gameObject);

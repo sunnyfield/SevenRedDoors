@@ -10,8 +10,8 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance;
 
-    public GameObject meatPrefab;
-    public GameObject bloodPrefab;
+    [SerializeField]
+    public GameObject[] poolablePrefabs;// = new GameObject[System.Enum.GetValues(typeof(Group)).Length];
 
     //[SerializeField]
     private GameObject pausePanel;
@@ -53,7 +53,7 @@ public class GameController : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
+        }  
     }
 
     private void Start()
@@ -91,14 +91,13 @@ public class GameController : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        //GameObject obj = Pool.Pop(Group.Bullet);
+        for (int i = 0; i < Pool.objectsToPool.Length; i++)
+        {
+            var poolable = new PoolableObject(poolablePrefabs[i], (Group)i, 5);
+            Pool.objectsToPool[i] = poolable;
+        }
 
-        //Pool Initialisation
-        //pool = Pool.InitializePool()
-        Pool.objectsToPool.Add(Group.VFX_Meat, new PoolableObject(meatPrefab, Group.VFX_Meat, 5));
-        Pool.GetPool(Group.VFX_Meat);
-        Pool.objectsToPool.Add(Group.VFX_BloodExplosion, new PoolableObject(bloodPrefab, Group.VFX_BloodExplosion, 2));
-        Pool.GetPool(Group.VFX_BloodExplosion);
+        Pool.CreatePools();
     }
 
     private void Update()

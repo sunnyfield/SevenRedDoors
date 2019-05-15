@@ -13,7 +13,6 @@ public class InteractiveTrigger : MonoBehaviour
     private Sprite spriteOFF;
     private Transform Icon;
     private BoxCollider2D boxTrigger;
-    [SerializeField]
     private Transform icon;
     [SerializeField]
     public GameObject objectToActivate;
@@ -28,8 +27,8 @@ public class InteractiveTrigger : MonoBehaviour
         spriteRenderer.sprite = spriteOFF;
         spriteON = Resources.Load<Sprite>("Images/Interactive/Trigger_ON");
 
-        Icon = transform.Find("Icon");
-        icon = GameObject.Find("/Scene/Trigger/Icon").GetComponent<Transform>();
+        //Icon = transform.Find("Icon");
+        icon = transform.GetChild(0);
         icon.gameObject.SetActive(false);
         
         boxTrigger = gameObject.GetComponent<BoxCollider2D>();

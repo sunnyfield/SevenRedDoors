@@ -121,6 +121,7 @@ public class PlayerController : UnitScript
         if (grounded && enableMovement)
         {
             rigidBodyUnit2d.drag = 1f;
+            grounded = false;
             anim.SetBool("ground", false);
             rigidBodyUnit2d.velocity += Vector2.up * jumpForce;
         }
@@ -192,14 +193,9 @@ public class PlayerController : UnitScript
             anim.SetTrigger("shoot");
             StartCoroutine(CameraFollow.instance.Recoil());
 
-            projectileClone = ObjectPooler.instance.GetPooledObject("Bullet").GetComponent<ProjectilesMove>();
+            projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
             if(projectileClone != null)
-            {
-                projectileClone.transform.position = firePoint.position;
-                projectileClone.transform.rotation = firePoint.rotation;
                 projectileClone.maxExistDistance = projectileDist;
-                projectileClone.gameObject.SetActive(true);
-            }
             
             gunCaseParticleSystem.Emit(1);
         }
@@ -207,18 +203,8 @@ public class PlayerController : UnitScript
 
     private void BoxDestroy()
     {
-        GameObject explode;      
-        explode = ObjectPooler.instance.GetPooledObject("VFX_BoxExplode");
-        explode.transform.position = boxRef.transform.position;
+        Pool.Pull(Group.VFX_BoxCrush, boxRef.transform.position, Quaternion.identity, 1f);
         Destroy(boxRef);
-        explode.SetActive(true);
-        boxRef = explode;
-        Invoke("BoxBackToPool", 1f);
-    }
-
-    private void BoxBackToPool()
-    {
-        boxRef.SetActive(false);
     }
 
     public void Reload()
