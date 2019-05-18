@@ -20,12 +20,18 @@ public class PlayerController : UnitScript
     public LayerMask whatToHit;
 
 
-    private float jumpForce = 10.3f;
+    private float jumpForce = 10.5f;
     private int blinkCount = 8;
 
     private uint ammo = 5;
     private bool isAttack = false;
     private bool isReloading = false;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
+        Gizmos.DrawSphere(groundCheckPoint.position, overrlapRadius);
+    }
 
     private void Awake()
     {

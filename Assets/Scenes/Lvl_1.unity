@@ -5946,7 +5946,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 439696619}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 15.46, y: -5.72, z: 0}
+  m_LocalPosition: {x: 15.77, y: -6.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 665544604}
@@ -8484,7 +8484,7 @@ PrefabInstance:
     - target: {fileID: 8479123626524754411, guid: 264209e46eee9804cabd9628358a0e3a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.079
+      value: -0.64
       objectReference: {fileID: 0}
     - target: {fileID: 8479123626524754411, guid: 264209e46eee9804cabd9628358a0e3a,
         type: 3}
@@ -29499,6 +29499,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1594526584}
     m_Modifications:
+    - target: {fileID: 20546181533746007, guid: f6c2caa907ed77249ae5e209d2f9335d,
+        type: 3}
+      propertyPath: m_Name
+      value: FakeWood
+      objectReference: {fileID: 0}
     - target: {fileID: 20546181533746000, guid: f6c2caa907ed77249ae5e209d2f9335d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -29554,11 +29559,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 20546181533746007, guid: f6c2caa907ed77249ae5e209d2f9335d,
-        type: 3}
-      propertyPath: m_Name
-      value: FakeWood
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6c2caa907ed77249ae5e209d2f9335d, type: 3}
 --- !u!4 &2141942965 stripped
@@ -29580,6 +29580,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1594526584}
     m_Modifications:
+    - target: {fileID: 20546181533746007, guid: f6c2caa907ed77249ae5e209d2f9335d,
+        type: 3}
+      propertyPath: m_Name
+      value: FakeWood (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 20546181533746000, guid: f6c2caa907ed77249ae5e209d2f9335d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -29634,11 +29639,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 20546181533746007, guid: f6c2caa907ed77249ae5e209d2f9335d,
-        type: 3}
-      propertyPath: m_Name
-      value: FakeWood (1)
       objectReference: {fileID: 0}
     - target: {fileID: 20546181533746004, guid: f6c2caa907ed77249ae5e209d2f9335d,
         type: 3}

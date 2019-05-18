@@ -10,8 +10,8 @@ public class UnitScript : MonoBehaviour
     protected Transform firePoint;
     protected SpriteRenderer unitsSprite;
     public LayerMask whatIsGround;
-    private Transform groundCheckPoint;
-    private float overrlapRadius = 0.08f;
+    public Transform groundCheckPoint;
+    public float overrlapRadius = 0.03f;
     protected Coroutine takeDamageBlinkingRoutine = null;
 
 
@@ -35,12 +35,12 @@ public class UnitScript : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-            Invoke("GroundCheck", 0.1f);
+            Invoke("GroundCheck", 0.01f);
     }
 
     protected virtual void OnCollisionExit2D(Collision2D collision)
     {
-            Invoke("GroundCheck", 0.1f);
+            Invoke("GroundCheck", 0.01f);
     }
 
     protected virtual void UnitSetup()

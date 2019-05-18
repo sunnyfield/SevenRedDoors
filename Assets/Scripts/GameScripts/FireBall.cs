@@ -19,6 +19,8 @@ public class FireBall : MonoBehaviour
             collision.gameObject.GetComponent<PlayerController>().TakeDamage();
             Pool.Push(Group.Fireball, gameObject);
         }
+        else if (collision.gameObject.CompareTag("Coins") || collision.gameObject.CompareTag("Health") || collision.gameObject.CompareTag("Keys"))
+        { }
         else
             Pool.Push(Group.Fireball, gameObject);
     }
