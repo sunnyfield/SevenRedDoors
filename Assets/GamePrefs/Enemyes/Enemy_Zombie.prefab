@@ -54,7 +54,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3627470684178258684}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.53, z: 0}
+  m_LocalPosition: {x: 0, y: -1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3627470684265706357}
@@ -132,7 +132,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -921823487
-  m_SortingLayer: 11
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c5a5110e5fb64bd49a3720296b65f25f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -197,13 +197,14 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 5632
+  groundCheckPoint: {fileID: 0}
+  overrlapRadius: 0.03
   sideHorizontal: 0
+  grounded: 0
   enableMovement: 1
   whatToHit:
     serializedVersion: 2
     m_Bits: 256
-  bloodExplosion: {fileID: 0}
-  meat: {fileID: 0}
   leftBorder: 0
   rightBorder: 0
 --- !u!95 &3627470684265706354

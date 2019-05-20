@@ -118,12 +118,12 @@ public class UnitScript : MonoBehaviour
             moveVector.x = (grounded) ? (sideHorizontal * maxSpeed) : (sideHorizontal * (maxSpeed * 0.95f));
             moveVector.y = rigidBodyUnit2d.velocity.y;
 
-            if (!grounded)
-                rigidBodyUnit2d.drag = 1f;
-            else if (Mathf.Abs(moveVector.x) > 0 || moveVector.y > 0)
-                rigidBodyUnit2d.drag = 1f;
-            else if (Mathf.Abs(moveVector.x) <= 0.001)
-                rigidBodyUnit2d.drag = 1000000f;
+            //if (!grounded)
+            //    rigidBodyUnit2d.drag = 1f;
+            //else if (Mathf.Abs(moveVector.x) > 0 || moveVector.y > 0)
+            //    rigidBodyUnit2d.drag = 1f;
+            //else if (Mathf.Abs(moveVector.x) <= 0.001)
+            //    rigidBodyUnit2d.drag = 1000000f;
 
             rigidBodyUnit2d.velocity = moveVector;
             anim.SetInteger("speedH", Mathf.Abs(sideHorizontal));
@@ -142,31 +142,13 @@ public class UnitScript : MonoBehaviour
 
     private void GroundCheck()
     {
-        grounded = Physics2D.OverlapCircle(groundCheckPoint.position, overrlapRadius, whatIsGround);
+        RaycastHit2D hit = Physics2D.Raycast(groundCheckPoint.position, -groundCheckPoint.up, overrlapRadius, whatIsGround);
+        if (hit && hit.distance <= 0.01f)
+            grounded = true;
+        else
+            grounded = false;
         anim.SetBool("ground", grounded);
     }
-
-    /*private void FlipOld()
-    {
-    if (sideHorizontal == 0)
-        return;
-
-    if (sideHorizontal < 0)
-    {
-        unitsSprite.flipX = true;
-        firePoint.localPosition = new Vector2(-1.19f, firePoint.localPosition.y);
-        firePoint.eulerAngles = 180f * Vector3.up;
-        gunCaseEmiter.eulerAngles = new Vector2(0f, 180f);
-    }
-    else
-    {
-        unitsSprite.flipX = false;
-        firePoint.localPosition = new Vector2(1.19f, firePoint.localPosition.y);
-        firePoint.eulerAngles = 0f * Vector3.up;
-        gunCaseEmiter.eulerAngles = new Vector2(0f, 0f);
-    }
-
-    }*/
 
     public void MoveRight()
     {

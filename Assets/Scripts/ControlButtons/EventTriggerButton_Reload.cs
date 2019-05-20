@@ -8,6 +8,6 @@ public class EventTriggerButton_Reload : EventTrigger
 {
     public override void OnPointerDown(PointerEventData eventData)
     {
-            PlayerController.instance.Reload();
+            PlayerController.instance.state = State.RELOAD;
     }
 }

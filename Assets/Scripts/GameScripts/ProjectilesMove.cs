@@ -29,11 +29,12 @@ public class ProjectilesMove : MonoBehaviour
 
         if (Mathf.Abs(transform.localPosition.x - startPosition.x) >= maxExistDistance)
         {
-            if(hitFlash == null)
-                hitFlash = Pool.Pull(Group.VFX_Hit, transform.localPosition, transform.localRotation, 0.3f);
-
             transform.localPosition = transform.right * maxExistDistance + startPosition;
             speed = 0;
+
+            if (hitFlash == null)
+                hitFlash = Pool.Pull(Group.VFX_Hit, transform.localPosition, transform.localRotation, 0.3f);
+
             Pool.Push(Group.Projectile, gameObject, 0.1f);       
         }
     }

@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum State
+{
+    IDLE,
+    RUN,
+    JUMP,
+    ATTACK,
+    RELOAD,
+    BOUNCE
+}
+
 public class PlayerController : UnitScript
 {
     public static PlayerController instance;
@@ -16,22 +26,19 @@ public class PlayerController : UnitScript
     private Vector3 respawnPosition;
     private Coroutine inputDelayRoutine = null;
     private GameObject boxRef;
+    private GameObject[] currentGround = new GameObject[3];
 
     public LayerMask whatToHit;
 
+    public State state = State.JUMP;
 
     private float jumpForce = 10.5f;
     private int blinkCount = 8;
 
     private uint ammo = 5;
-    private bool isAttack = false;
-    private bool isReloading = false;
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
-        Gizmos.DrawSphere(groundCheckPoint.position, overrlapRadius);
-    }
+    private uint maxAmmo = 5;
+    private float reloadTime = 1f;
+    private float reloadTimer = 1f;
 
     private void Awake()
     {
@@ -72,11 +79,54 @@ public class PlayerController : UnitScript
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        base.OnCollisionEnter2D(collision);
+        Vector2 contactNormal;
+        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
+        {
+            contactNormal = collision.contacts[0].normal;
+            if (contactNormal.y > contactNormal.x)
+            {
+                var index = System.Array.IndexOf(currentGround, null);
+                if (index >= 0)
+                {
+                    print(currentGround[index]);
+                    currentGround[index] = collision.gameObject;
+                    print(currentGround[index]);
+                }
+                else
+                {
+                    print("bad work");
+                    currentGround[0] = collision.gameObject;
+                }
+                if (sideHorizontal == 0)
+                    state = State.IDLE;
+                else
+                    state = State.RUN;
+            }
+        }
+
+
         if (collision.gameObject.CompareTag("Zombie") || collision.gameObject.CompareTag("Traps"))
         {
             TakeDamage();
             Bounce(collision);
+        }
+    }
+
+    protected override void OnCollisionExit2D(Collision2D collision)
+    {
+        int count = 0;
+        for(int i = 0; i < 3; i++)
+        {
+            if (currentGround[i] == collision.gameObject)
+                currentGround[i] = null;
+
+            if (currentGround[i] != null)
+                count++;
+        }
+
+        if (count == 0)
+        {
+            state = State.JUMP;
         }
     }
 
@@ -110,27 +160,117 @@ public class PlayerController : UnitScript
 
     private void Update()
     {
-        isAttack = anim.GetCurrentAnimatorStateInfo(0).IsName("Shoot");
 
 #if UNITY_EDITOR
-        sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
 
-        if (grounded && Input.GetButtonDown("Jump"))
-            Jump();
 
-        if (!isAttack && Input.GetKeyDown(KeyCode.F))
-            Shoot();
+        switch(state)
+        {
+            case State.IDLE:
+                rigidBodyUnit2d.drag = 1000000f;
+                sideHorizontal = 0;
+                if (enableMovement)
+                {
+                    sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+                    if (Input.GetButtonDown("Jump"))
+                    {
+                        Jump();
+                        state = State.JUMP;
+                    }
+                    else if (sideHorizontal != 0)
+                        state = State.RUN;
+                    else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
+                    {
+                        Shoot();
+                        state = State.ATTACK;
+                    }
+                    else if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo)
+                    {
+                        state = State.RELOAD;
+                        StartCoroutine(ReloadAnimation());                       
+                    }
+                }
+                break;
 
-        if (Input.GetKeyDown(KeyCode.R))
-            Reload();
+            case State.RUN:
+                rigidBodyUnit2d.drag = 1f;
+                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+                if (!enableMovement)
+                    state = State.IDLE;
+                else if (Input.GetButtonDown("Jump"))
+                {
+                    Jump();
+                    state = State.JUMP;
+                }
+                else if (sideHorizontal == 0)
+                    state = State.IDLE;
+                break;
+
+            case State.JUMP:
+                rigidBodyUnit2d.drag = 1f;
+                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+                break;
+
+            case State.ATTACK:
+                break;
+
+            case State.RELOAD:
+                if (enableMovement)
+                {
+                    sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+                    if (Input.GetButtonDown("Jump"))
+                    {
+                        Jump();
+                        state = State.JUMP;
+                    }
+                    else if (sideHorizontal != 0)
+                        state = State.RUN;
+                    else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
+                    {
+                        Shoot();
+                        state = State.ATTACK;
+                    }
+                    else if (reloadTimer > 0)
+                    {
+                        
+                        reloadTimer -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        ammo++;
+                        GameController.instance.AmmoBarIncreaseUI();
+                        reloadTimer = reloadTime;
+                        if (ammo == maxAmmo)
+                            state = State.IDLE;
+                    }
+                }
+                else
+                    state = State.IDLE;
+                break;
+            case State.BOUNCE:
+                rigidBodyUnit2d.drag = 1f;
+                break;
+
+        }
 #endif
+
     }
 
-    
+    private void SetIdleState()
+    {
+        print("Set idle");
+        state = State.IDLE;
+    }
+
+    public void SetReloadState()
+    {
+        print("Reload");
+        state = State.RELOAD;
+    }
 
     public void Jump()
     {
-        if (grounded && enableMovement)
+        //if (grounded && enableMovement)
         {
             rigidBodyUnit2d.drag = 1f;
             grounded = false;
@@ -183,7 +323,7 @@ public class PlayerController : UnitScript
 
     public void Shoot()
     {
-        if (ammo > 0 && grounded && !isAttack && enableMovement && rigidBodyUnit2d.velocity.magnitude < 0.01f)
+        //if (ammo > 0 && grounded && !isAttack && enableMovement && rigidBodyUnit2d.velocity.magnitude < 0.01f)
         {
             float projectileDist = 0f;
             float fireRange = 100f;
@@ -208,11 +348,10 @@ public class PlayerController : UnitScript
                 projectileDist = fireRange;
 
 
-            --ammo;
+            ammo--;
             GameController.instance.AmmoBarDecreaseUI();
 
             anim.SetTrigger("shoot");
-            isAttack = true;
             StartCoroutine(CameraFollow.instance.Recoil());
 
             projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
@@ -229,43 +368,43 @@ public class PlayerController : UnitScript
         Destroy(boxRef);
     }
 
-    public void Reload()
-    {
-        if (!isReloading)
-        {
-            StartCoroutine(ReloadConditionsCheck());
-            StartCoroutine(ReloadWithDelay());
-        }
-    }
+    //public void Reload()
+    //{
+    //    if (!isReloading)
+    //    {
+    //        StartCoroutine(ReloadConditionsCheck());
+    //        StartCoroutine(ReloadWithDelay());
+    //    }
+    //}
 
-    private IEnumerator ReloadWithDelay()
-    {
-        while (isReloading)
-        {
-            yield return new WaitForSeconds(1f);
-            if(isReloading)
-            {
-                ammo++;
-                GameController.instance.AmmoBarIncreaseUI();
-            }
-        }
-    }
+    //private IEnumerator ReloadWithDelay()
+    //{
+    //    while (isReloading)
+    //    {
+    //        yield return new WaitForSeconds(1f);
+    //        if(isReloading)
+    //        {
+    //            ammo++;
+    //            GameController.instance.AmmoBarIncreaseUI();
+    //        }
+    //    }
+    //}
 
-    private IEnumerator ReloadConditionsCheck()
-    {
-        isReloading = true;
-        StartCoroutine(RloadAnimation());
-        while (isReloading)
-        {
-            if ((rigidBodyUnit2d.velocity.magnitude > 0.01) || (ammo > 4) || isAttack)
-            {
-                isReloading = false;
-            }
-            yield return null;
-        }
-    }
+    //private IEnumerator ReloadConditionsCheck()
+    //{
+    //    isReloading = true;
+    //    StartCoroutine(RloadAnimation());
+    //    while (isReloading)
+    //    {
+    //        if ((rigidBodyUnit2d.velocity.magnitude > 0.01) || (ammo > 4) || isAttack)
+    //        {
+    //            isReloading = false;
+    //        }
+    //        yield return null;
+    //    }
+    //}
 
-    private IEnumerator RloadAnimation()
+    private IEnumerator ReloadAnimation()
     {
         float rotationSpeed = 150f;
         float scaleSpeed = 0.6f;
@@ -273,16 +412,21 @@ public class PlayerController : UnitScript
         Vector3 scaleIncrement = new Vector3(1f, 1f, 0f);
 
         reloadFlag.gameObject.SetActive(true);
-        while (isReloading)
+
+        while (state == State.RELOAD)
         {
-            if (reloadFlag.localScale.x >= 1.2 || reloadFlag.localScale.x <= 1)
-                scaleSpeed = -scaleSpeed;
+            if (reloadFlag.localScale.x >= 1.2)
+                scaleSpeed = -0.6f;
+            else if (reloadFlag.localScale.x <= 1)
+                scaleSpeed = 0.6f;
+
             reloadFlag.localScale += scaleIncrement * Time.deltaTime * scaleSpeed;
-            reloadArrowIcon.eulerAngles += rotationAngle * Time.deltaTime * rotationSpeed;
+            reloadArrowIcon.Rotate(0f, 0f, 1f * Time.deltaTime * rotationSpeed);
             yield return null;
         }
+
         reloadFlag.localScale = new Vector3(1f, 1f, 1f);
-        reloadArrowIcon.eulerAngles = new Vector3(0f, 0f, 0f);
+        reloadArrowIcon.localRotation = Quaternion.identity;
         reloadFlag.gameObject.SetActive(false);
     }
 
@@ -307,9 +451,6 @@ public class PlayerController : UnitScript
             Destroy(health);
         }   
     }
-
-
-
 
     public override void TakeDamage()
     {
