@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public enum State
 {
@@ -26,7 +27,7 @@ public class PlayerController : UnitScript
     private Vector3 respawnPosition;
     private Coroutine inputDelayRoutine = null;
     private GameObject boxRef;
-    private GameObject[] currentGround = new GameObject[3];
+    private List<GameObject> currentGround = new List<GameObject>();
 
     public LayerMask whatToHit;
 
@@ -55,6 +56,7 @@ public class PlayerController : UnitScript
     private void Start()
     {
         UnitSetup();
+        currentGround.Add(null);
         gunCaseParticleSystem = transform.GetChild(3).GetComponent<ParticleSystem>();
 
         reloadFlag = transform.GetChild(2);
@@ -79,31 +81,23 @@ public class PlayerController : UnitScript
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector2 contactNormal;
+        Profiler.BeginSample("Collision enter check");
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
-            contactNormal = collision.contacts[0].normal;
-            if (contactNormal.y > contactNormal.x)
+            if (collision.contacts[0].normal.y > 0.1f)
             {
-                var index = System.Array.IndexOf(currentGround, null);
-                if (index >= 0)
-                {
-                    print(currentGround[index]);
-                    currentGround[index] = collision.gameObject;
-                    print(currentGround[index]);
-                }
-                else
-                {
-                    print("bad work");
+                if(currentGround[0] == null)
                     currentGround[0] = collision.gameObject;
-                }
+                else
+                    currentGround.Add(collision.gameObject);
+
                 if (sideHorizontal == 0)
                     state = State.IDLE;
                 else
                     state = State.RUN;
             }
         }
-
+        Profiler.EndSample();
 
         if (collision.gameObject.CompareTag("Zombie") || collision.gameObject.CompareTag("Traps"))
         {
@@ -114,20 +108,18 @@ public class PlayerController : UnitScript
 
     protected override void OnCollisionExit2D(Collision2D collision)
     {
-        int count = 0;
-        for(int i = 0; i < 3; i++)
+        Profiler.BeginSample("Collision exit check");
+        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
-            if (currentGround[i] == collision.gameObject)
-                currentGround[i] = null;
-
-            if (currentGround[i] != null)
-                count++;
+            if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
+            {
+                currentGround[0] = null;
+                state = State.JUMP;
+            }
+            else
+                currentGround.Remove(collision.gameObject);       
         }
-
-        if (count == 0)
-        {
-            state = State.JUMP;
-        }
+        Profiler.EndSample();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -212,6 +204,8 @@ public class PlayerController : UnitScript
                 break;
 
             case State.ATTACK:
+                rigidBodyUnit2d.drag = 1f;
+                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
                 break;
 
             case State.RELOAD:
@@ -250,7 +244,6 @@ public class PlayerController : UnitScript
             case State.BOUNCE:
                 rigidBodyUnit2d.drag = 1f;
                 break;
-
         }
 #endif
 
@@ -258,13 +251,11 @@ public class PlayerController : UnitScript
 
     private void SetIdleState()
     {
-        print("Set idle");
         state = State.IDLE;
     }
 
     public void SetReloadState()
     {
-        print("Reload");
         state = State.RELOAD;
     }
 
@@ -281,6 +272,7 @@ public class PlayerController : UnitScript
 
     private void Bounce(Collision2D collision)
     {
+        state = State.BOUNCE;
         ContactPoint2D point = collision.GetContact(0);
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
         SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
@@ -290,6 +282,7 @@ public class PlayerController : UnitScript
     private void Bounce(Collider2D collider)
     {
         float x;
+        state = State.BOUNCE;
         SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
         Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
         if(rb2d != null)
@@ -302,7 +295,6 @@ public class PlayerController : UnitScript
             if (Mathf.Abs(x) > 0f)
                 rigidBodyUnit2d.velocity = new Vector2(-Mathf.Sign(x) * (x / x) * 5f, rigidBodyUnit2d.velocity.y);
         }
-        
     }
 
     private IEnumerator InputDelay(float delay)

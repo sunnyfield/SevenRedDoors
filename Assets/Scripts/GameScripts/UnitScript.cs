@@ -13,6 +13,8 @@ public class UnitScript : MonoBehaviour
     public Transform groundCheckPoint;
     public float overrlapRadius = 0.03f;
     protected Coroutine takeDamageBlinkingRoutine = null;
+    Vector2 moveVector = Vector2.zero;
+    float moveIncrement = 0.1f;
 
 
 
@@ -109,13 +111,26 @@ public class UnitScript : MonoBehaviour
 
     protected virtual void Move()
     {
-        Vector2 moveVector;
+        
         if (enableMovement)
         {
             if (transform.right.x * sideHorizontal < 0)
                 Flip();
-
-            moveVector.x = (grounded) ? (sideHorizontal * maxSpeed) : (sideHorizontal * (maxSpeed * 0.95f));
+            if (sideHorizontal != 0)
+            {
+                if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
+                {
+                    moveVector.x += moveIncrement * sideHorizontal;
+                    moveIncrement *= 2f;
+                }
+                else
+                    moveVector.x = sideHorizontal * maxSpeed;
+            }
+            else
+            {
+                moveIncrement = 0.1f;
+                moveVector.x = 0f;
+            }
             moveVector.y = rigidBodyUnit2d.velocity.y;
 
             //if (!grounded)
