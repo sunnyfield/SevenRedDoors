@@ -10,11 +10,14 @@ public interface ITriggerable
 
 public class TriggerableObject : MonoBehaviour, ITriggerable
 {
-    private Transform platform;
+    private Rigidbody2D platform;
+    private float rotationSpeed = 15f;
+
 
     private void Start()
     {
-        platform = transform.GetChild(1);
+        platform = transform.GetChild(1).GetComponent<Rigidbody2D>();
+        platform.bodyType = RigidbodyType2D.Static;
     }
 
 
@@ -25,12 +28,15 @@ public class TriggerableObject : MonoBehaviour, ITriggerable
 
     private IEnumerator TurnPlatform()
     {
-        while (platform.eulerAngles.z != 0)
+        platform.bodyType = RigidbodyType2D.Dynamic;
+
+        while (platform.rotation > 0.1f)
         {
-            platform.eulerAngles = Vector3.Lerp(platform.eulerAngles, Vector3.zero, Time.deltaTime * 2f);
-            if (platform.eulerAngles.z < 0.01f)
-                platform.eulerAngles = Vector3.zero;
+            platform.MoveRotation(Mathf.Lerp(platform.rotation, 0, Time.deltaTime * rotationSpeed));
             yield return null;
         }
+
+        platform.rotation = 0;
+        platform.bodyType = RigidbodyType2D.Static;
     }
 }

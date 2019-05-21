@@ -14,6 +14,7 @@ public class Traps : MonoBehaviour
     private Transform arrowTransform;
     private float sawSpeed = 5f;
     private float arrowSpeed = 3f;
+    private float trapTimer;
 
     private void Start()
     {
@@ -35,17 +36,17 @@ public class Traps : MonoBehaviour
         moveDirectionSaw = Vector2.right * sawSpeed;
         rigidbodySaw = gameObject.GetComponent<Rigidbody2D>();
         rigidbodySaw.velocity = moveDirectionSaw;
-        StartCoroutine(RotateSaw());
     }
 
     private void ArrowSetup()
     {
-        moveDirectionArrow = Vector2.up * arrowSpeed;
+        
         arrowPoint = transform.GetChild(0);
         arrowRB2D = transform.GetChild(1).gameObject.GetComponent<Rigidbody2D>();
         arrowTransform = transform.GetChild(1);
+        moveDirectionArrow = (arrowPoint.position - arrowTransform.position).normalized * arrowSpeed;
         arrowRB2D.velocity = moveDirectionArrow;
-        StartCoroutine(ArrowShoot());
+        trapTimer = Random.Range(0.2f, 1.2f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -57,8 +58,37 @@ public class Traps : MonoBehaviour
                 break;
             default:
                 break;
+        } 
+    }
+
+    private void FixedUpdate()
+    {
+        switch (currentTrapType)
+        {
+            case (TrapType.Arrow):
+                if (arrowTransform.localPosition.y + 1f > arrowPoint.localPosition.y)
+                {
+                    arrowTransform.gameObject.SetActive(false);
+                    arrowTransform.localPosition = Vector2.zero;
+                    trapTimer = Random.Range(0.2f, 1.2f);
+                }
+                if (trapTimer > 0)
+                    trapTimer -= Time.fixedDeltaTime;
+                else
+                {
+                    if (!arrowTransform.gameObject.activeInHierarchy)
+                    {
+                        arrowTransform.gameObject.SetActive(true);
+                        arrowRB2D.velocity = moveDirectionArrow;
+                    }
+                }
+                break;
+            case (TrapType.Saw):
+                rigidbodySaw.MoveRotation(rigidbodySaw.rotation + Time.deltaTime * 10000f);
+                break;
+            default:
+                break;
         }
-        
     }
 
     private void SawTrigger(Collider2D collision)
@@ -67,32 +97,6 @@ public class Traps : MonoBehaviour
         {
             moveDirectionSaw = -moveDirectionSaw;
             rigidbodySaw.velocity = moveDirectionSaw;
-        }
-    }
-
-    private IEnumerator ArrowShoot()
-    {
-        while (gameObject.activeInHierarchy)
-        {
-            if (arrowTransform.localPosition.y > arrowPoint.localPosition.y)
-            {
-                arrowRB2D.velocity = Vector2.zero;
-                arrowTransform.localPosition = Vector2.zero;
-                arrowTransform.gameObject.SetActive(false);
-                yield return new WaitForSeconds(Random.Range(0.2f, 1.2f));
-            }
-            arrowTransform.gameObject.SetActive(true);
-            arrowRB2D.velocity = moveDirectionArrow;
-            yield return new WaitForFixedUpdate();
-        }
-    }
-
-    private IEnumerator RotateSaw()
-    {
-        while (gameObject.activeInHierarchy)
-        {
-            rigidbodySaw.MoveRotation(rigidbodySaw.rotation + Time.deltaTime * 10000f);
-            yield return null;
         }
     }
 }

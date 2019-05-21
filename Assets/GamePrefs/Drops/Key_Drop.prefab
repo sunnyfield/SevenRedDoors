@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5803362878807237193}
   - component: {fileID: 5803362878807237238}
   - component: {fileID: 1299850105562411521}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: Key_Drop
   m_TagString: Keys
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 21086487
-  m_SortingLayer: 13
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 861be5b4744d60a498087bf11a9a2190, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

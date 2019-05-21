@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1494141717338605678}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8764079706564978635}
   - component: {fileID: 4161959914590310142}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: CheckPoint
   m_TagString: CheckPoint
   m_Icon: {fileID: 0}

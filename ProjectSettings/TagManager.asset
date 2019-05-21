@@ -21,6 +21,13 @@ TagManager:
   - Platform
   - VFX_Meat
   - VFX_BloodExplosion
+  - VFX_BoxExplode
+  - Hit
+  - Layer-1
+  - VFX_FireBall
+  - VFX_MuzzleFlash
+  - Bullet
+  - VFX_Hit
   layers:
   - Default
   - TransparentFX
@@ -31,21 +38,21 @@ TagManager:
   - 
   - 
   - Player
-  - Environment
+  - Ground
   - Background
-  - PickUp
+  - RedDoor
   - Boxes
   - Interactive
-  - Zombie
+  - IgnoreZombie
   - Trap
   - FireBall
-  - CollidingZombie
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Zombie
+  - BottomLevelLimit
+  - Coins
+  - Health
+  - Key
+  - CheckPoint
+  - Flip
   - 
   - 
   - 

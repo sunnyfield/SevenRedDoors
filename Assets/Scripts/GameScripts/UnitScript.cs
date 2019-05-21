@@ -47,9 +47,9 @@ public class UnitScript : MonoBehaviour
 
     protected virtual void UnitSetup()
     {
-        unitsSprite = GetComponent<SpriteRenderer>();
+        unitsSprite = GetComponentInChildren<SpriteRenderer>();
         rigidBodyUnit2d = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
 
         groundCheckPoint = transform.GetChild(1);
         firePoint = transform.GetChild(0);

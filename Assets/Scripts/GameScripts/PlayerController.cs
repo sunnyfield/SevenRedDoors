@@ -3,6 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
+public enum Layer
+{
+    Default,
+    TransparentFX,
+    IgnoreRaycast,
+    Water = 4,
+    UI,
+    Player = 8,
+    Ground,
+    Background,
+    RedDoor,
+    Boxes,
+    Interactive,
+    IgnoreZombie,
+    Traps,
+    FireBall,
+    Zombie,
+    BottomLevelLimit,
+    Coins,
+    Health,
+    Key,
+    CheckPoint
+}
+
 public enum State
 {
     IDLE,
@@ -25,8 +49,9 @@ public class PlayerController : UnitScript
     private Transform startPoint;
     [SerializeField]
     private Vector3 respawnPosition;
-    private Coroutine inputDelayRoutine = null;
+    private Coroutine bounceDelayRoutine = null;
     private GameObject boxRef;
+    [SerializeField]
     private List<GameObject> currentGround = new List<GameObject>();
 
     public LayerMask whatToHit;
@@ -55,7 +80,16 @@ public class PlayerController : UnitScript
 
     private void Start()
     {
+        AnimationClip clip;
+        AnimationEvent evt;
+
         UnitSetup();
+        clip = anim.runtimeAnimatorController.animationClips[2];
+        evt = new AnimationEvent();
+        evt.time = 0.35f;
+        evt.functionName = "SetIdleState";
+        clip.AddEvent(evt);
+
         currentGround.Add(null);
         gunCaseParticleSystem = transform.GetChild(3).GetComponent<ParticleSystem>();
 
@@ -84,7 +118,7 @@ public class PlayerController : UnitScript
         Profiler.BeginSample("Collision enter check");
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
-            if (collision.contacts[0].normal.y > 0.1f)
+            if (collision.contacts[0].normal.y > 0.2f)
             {
                 if(currentGround[0] == null)
                     currentGround[0] = collision.gameObject;
@@ -124,30 +158,34 @@ public class PlayerController : UnitScript
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Traps"))
+        switch(collision.gameObject.layer)
         {
-            TakeDamage();
-            Bounce(collision);
+            case (int)Layer.Traps:
+                TakeDamage();
+                Bounce(collision);
+                break;
+            case (int)Layer.Coins:
+                PickUpCoin(collision.gameObject);
+                break;
+            case (int)Layer.Health:
+                PickUpHealth(collision.gameObject);
+                break;
+            case (int)Layer.Key:
+                PickUpKey(collision.gameObject);
+                break;
+            case (int)Layer.RedDoor:
+                GameController.instance.GameWinCheck();
+                break;
+            case (int)Layer.BottomLevelLimit:
+                TakeDamage();
+                Respawn();
+                break;
+            case (int)Layer.CheckPoint:
+                respawnPosition = collision.gameObject.transform.GetChild(0).position;
+                break;
+            default:
+                break;
         }
-        else if (collision.CompareTag("Coins"))
-            PickUpCoin(collision.gameObject);
-
-        else if (collision.CompareTag("Keys"))
-            PickUpKey(collision.gameObject);
-
-        else if (collision.CompareTag("Health"))
-            PickUpHealth(collision.gameObject);
-
-        else if (collision.CompareTag("RedDoor"))
-            GameController.instance.GameWinCheck();
-
-        else if (collision.CompareTag("DeathObj"))
-        {
-            TakeDamage();
-            Respawn();
-        }
-        else if (collision.CompareTag("CheckPoint"))
-            respawnPosition = collision.gameObject.transform.GetChild(0).position;
     }
 
     private void Update()
@@ -160,36 +198,31 @@ public class PlayerController : UnitScript
         {
             case State.IDLE:
                 rigidBodyUnit2d.drag = 1000000f;
-                sideHorizontal = 0;
-                if (enableMovement)
+
+                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+                if (Input.GetButtonDown("Jump"))
                 {
-                    sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                    if (Input.GetButtonDown("Jump"))
-                    {
-                        Jump();
-                        state = State.JUMP;
-                    }
-                    else if (sideHorizontal != 0)
-                        state = State.RUN;
-                    else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
-                    {
-                        Shoot();
-                        state = State.ATTACK;
-                    }
-                    else if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo)
-                    {
-                        state = State.RELOAD;
-                        StartCoroutine(ReloadAnimation());                       
-                    }
+                    Jump();
+                    state = State.JUMP;
+                }
+                else if (sideHorizontal != 0)
+                    state = State.RUN;
+                else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
+                {
+                    Shoot();
+                    state = State.ATTACK;
+                }
+                else if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo)
+                {
+                    state = State.RELOAD;
+                    StartCoroutine(ReloadAnimation());                       
                 }
                 break;
 
             case State.RUN:
                 rigidBodyUnit2d.drag = 1f;
                 sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                if (!enableMovement)
-                    state = State.IDLE;
-                else if (Input.GetButtonDown("Jump"))
+                if (Input.GetButtonDown("Jump"))
                 {
                     Jump();
                     state = State.JUMP;
@@ -204,8 +237,6 @@ public class PlayerController : UnitScript
                 break;
 
             case State.ATTACK:
-                rigidBodyUnit2d.drag = 1f;
-                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
                 break;
 
             case State.RELOAD:
@@ -241,6 +272,7 @@ public class PlayerController : UnitScript
                 else
                     state = State.IDLE;
                 break;
+
             case State.BOUNCE:
                 rigidBodyUnit2d.drag = 1f;
                 break;
@@ -275,7 +307,7 @@ public class PlayerController : UnitScript
         state = State.BOUNCE;
         ContactPoint2D point = collision.GetContact(0);
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
-        SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
+        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(0.15f));
         rigidBodyUnit2d.velocity = new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
     }
 
@@ -283,7 +315,7 @@ public class PlayerController : UnitScript
     {
         float x;
         state = State.BOUNCE;
-        SingleRoutineStart(ref inputDelayRoutine, InputDelay(0.15f));
+        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(0.15f));
         Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
         if(rb2d != null)
         {
@@ -297,18 +329,20 @@ public class PlayerController : UnitScript
         }
     }
 
-    private IEnumerator InputDelay(float delay)
-    {    
-        enableMovement = false;
-        rigidBodyUnit2d.drag = 1f;
+    private IEnumerator BounceDelay(float delay)
+    {
         yield return new WaitForSeconds(delay);
-        enableMovement = true;
-        inputDelayRoutine = null;
+        bounceDelayRoutine = null;
+        RaycastHit2D hit = Physics2D.Raycast(groundCheckPoint.position, -groundCheckPoint.up, overrlapRadius, whatIsGround);
+        if (hit && hit.distance <= 0.01f)
+            state = State.IDLE;
+        else
+            state = State.JUMP;
     }
 
     private void Respawn()
     {
-        SingleRoutineStart(ref inputDelayRoutine, InputDelay(1.3f));
+        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(1.3f));
         rigidBodyUnit2d.velocity = Vector2.zero;
         transform.position = respawnPosition;       
     }

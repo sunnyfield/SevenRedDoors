@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7019394498089164430}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: Point
   m_TagString: Flip
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7019394498596766438}
   - component: {fileID: 7019394498596766441}
   - component: {fileID: 7019394498596766440}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: Arrow
   m_TagString: Traps
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 7019394499894447706}
   - component: {fileID: 7019394499894447709}
   - component: {fileID: 1913024502595368325}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: Arrow_trap
   m_TagString: Traps
   m_Icon: {fileID: 0}
