@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-
-
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
 
     [SerializeField]
     public GameObject[] poolablePrefabs;// = new GameObject[System.Enum.GetValues(typeof(Group)).Length];
+
+    private PlayerController player;
 
     //[SerializeField]
     private GameObject pausePanel;
@@ -58,6 +58,8 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        player = GameObject.Find("/Scene/Player").GetComponent<PlayerController>();
+
         //UI
         keyImageUI = GameObject.Find("/Canvas/KeyFlag");
         keyImageUI.SetActive(false);
@@ -106,7 +108,9 @@ public class GameController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && !gameIsPaused && !gameOver)
             Pause();
         else if (Input.GetKeyDown(KeyCode.Escape) && gameIsPaused && !gameOver)
-            UnPause();       
+            UnPause();
+
+        HandleInput(player);
     }
 
     public void CoinIncrease()
@@ -231,5 +235,21 @@ public class GameController : MonoBehaviour
         System.GC.Collect();
         Time.timeScale = 1f;
         //controlButtons.SetActive(true);
+    }
+
+    private void HandleInput(PlayerController player)
+    {
+        MoveInput move = MoveInput.NONE;
+        ActionInput action = ActionInput.NONE;
+
+        if ((int)Input.GetAxisRaw("Horizontal") == 1) move = MoveInput.RIGHT;
+        else if ((int)Input.GetAxisRaw("Horizontal") == -1) move = MoveInput.LEFT;
+
+        if (Input.GetButtonDown("Jump")) action = ActionInput.JUMP;
+        else if (Input.GetKeyDown(KeyCode.F)) action = ActionInput.FIRE;
+        else if (Input.GetKeyDown(KeyCode.R)) action = ActionInput.RELOAD;
+        else if (Input.GetKeyDown(KeyCode.E)) action = ActionInput.ACTIVATE;
+
+        player.HandleInput(move, action);
     }
 }

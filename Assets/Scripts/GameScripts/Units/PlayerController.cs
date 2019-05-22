@@ -37,6 +37,22 @@ public enum State
     BOUNCE
 }
 
+public enum MoveInput
+{
+    RIGHT,
+    LEFT,
+    NONE
+}
+
+public enum ActionInput
+{
+    FIRE,
+    JUMP,
+    RELOAD,
+    ACTIVATE,
+    NONE
+}
+
 public class PlayerController : UnitScript
 {
     public static PlayerController instance;
@@ -53,6 +69,11 @@ public class PlayerController : UnitScript
     private GameObject boxRef;
     [SerializeField]
     private List<GameObject> currentGround = new List<GameObject>();
+
+    private IPlayerState playerState;
+    public Idle idleState = new Idle();
+    public Run runState = new Run();
+
 
     public LayerMask whatToHit;
 
@@ -84,7 +105,7 @@ public class PlayerController : UnitScript
         AnimationEvent evt;
 
         UnitSetup();
-        clip = anim.runtimeAnimatorController.animationClips[2];
+        clip = anim.runtimeAnimatorController.animationClips[0];
         evt = new AnimationEvent();
         evt.time = 0.35f;
         evt.functionName = "SetIdleState";
@@ -106,6 +127,8 @@ public class PlayerController : UnitScript
         transform.position = startPoint.position;
         transform.rotation = startPoint.rotation;
         respawnPosition = startPoint.position;
+
+        playerState = idleState;
     }
 
     private void FixedUpdate()
@@ -192,91 +215,89 @@ public class PlayerController : UnitScript
     {
 
 #if UNITY_EDITOR
+        //switch(state)
+        //{
+        //    case State.IDLE:
+        //        rigidBodyUnit2d.drag = 1000000f;
 
+        //        sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+        //        if (Input.GetButtonDown("Jump"))
+        //        {
+        //            Jump();
+        //            state = State.JUMP;
+        //        }
+        //        else if (sideHorizontal != 0)
+        //            state = State.RUN;
+        //        else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
+        //        {
+        //            Shoot();
+        //            state = State.ATTACK;
+        //        }
+        //        else if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo)
+        //        {
+        //            state = State.RELOAD;
+        //            StartCoroutine(ReloadAnimation());                       
+        //        }
+        //        break;
 
-        switch(state)
-        {
-            case State.IDLE:
-                rigidBodyUnit2d.drag = 1000000f;
+        //    case State.RUN:
+        //        rigidBodyUnit2d.drag = 1f;
+        //        sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+        //        if (Input.GetButtonDown("Jump"))
+        //        {
+        //            Jump();
+        //            state = State.JUMP;
+        //        }
+        //        else if (sideHorizontal == 0)
+        //            state = State.IDLE;
+        //        break;
 
-                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                if (Input.GetButtonDown("Jump"))
-                {
-                    Jump();
-                    state = State.JUMP;
-                }
-                else if (sideHorizontal != 0)
-                    state = State.RUN;
-                else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
-                {
-                    Shoot();
-                    state = State.ATTACK;
-                }
-                else if (Input.GetKeyDown(KeyCode.R) && ammo < maxAmmo)
-                {
-                    state = State.RELOAD;
-                    StartCoroutine(ReloadAnimation());                       
-                }
-                break;
+        //    case State.JUMP:
+        //        rigidBodyUnit2d.drag = 1f;
+        //        sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+        //        break;
 
-            case State.RUN:
-                rigidBodyUnit2d.drag = 1f;
-                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                if (Input.GetButtonDown("Jump"))
-                {
-                    Jump();
-                    state = State.JUMP;
-                }
-                else if (sideHorizontal == 0)
-                    state = State.IDLE;
-                break;
+        //    case State.ATTACK:
+        //        break;
 
-            case State.JUMP:
-                rigidBodyUnit2d.drag = 1f;
-                sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                break;
-
-            case State.ATTACK:
-                break;
-
-            case State.RELOAD:
-                if (enableMovement)
-                {
-                    sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
-                    if (Input.GetButtonDown("Jump"))
-                    {
-                        Jump();
-                        state = State.JUMP;
-                    }
-                    else if (sideHorizontal != 0)
-                        state = State.RUN;
-                    else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
-                    {
-                        Shoot();
-                        state = State.ATTACK;
-                    }
-                    else if (reloadTimer > 0)
-                    {
+        //    case State.RELOAD:
+        //        if (enableMovement)
+        //        {
+        //            sideHorizontal = (int)Input.GetAxisRaw("Horizontal");
+        //            if (Input.GetButtonDown("Jump"))
+        //            {
+        //                Jump();
+        //                state = State.JUMP;
+        //            }
+        //            else if (sideHorizontal != 0)
+        //                state = State.RUN;
+        //            else if (Input.GetKeyDown(KeyCode.F) && ammo > 0)
+        //            {
+        //                Shoot();
+        //                state = State.ATTACK;
+        //            }
+        //            else if (reloadTimer > 0)
+        //            {
                         
-                        reloadTimer -= Time.deltaTime;
-                    }
-                    else
-                    {
-                        ammo++;
-                        GameController.instance.AmmoBarIncreaseUI();
-                        reloadTimer = reloadTime;
-                        if (ammo == maxAmmo)
-                            state = State.IDLE;
-                    }
-                }
-                else
-                    state = State.IDLE;
-                break;
+        //                reloadTimer -= Time.deltaTime;
+        //            }
+        //            else
+        //            {
+        //                ammo++;
+        //                GameController.instance.AmmoBarIncreaseUI();
+        //                reloadTimer = reloadTime;
+        //                if (ammo == maxAmmo)
+        //                    state = State.IDLE;
+        //            }
+        //        }
+        //        else
+        //            state = State.IDLE;
+        //        break;
 
-            case State.BOUNCE:
-                rigidBodyUnit2d.drag = 1f;
-                break;
-        }
+        //    case State.BOUNCE:
+        //        rigidBodyUnit2d.drag = 1f;
+        //        break;
+        //}
 #endif
 
     }
@@ -293,13 +314,10 @@ public class PlayerController : UnitScript
 
     public void Jump()
     {
-        //if (grounded && enableMovement)
-        {
             rigidBodyUnit2d.drag = 1f;
             grounded = false;
             anim.SetBool("ground", false);
             rigidBodyUnit2d.velocity += Vector2.up * jumpForce;
-        }
     }
 
     private void Bounce(Collision2D collision)
@@ -501,5 +519,13 @@ public class PlayerController : UnitScript
         GameController.instance.GameOver();
     }
 
-
+    public void HandleInput(MoveInput move, ActionInput action)
+    {
+        IPlayerState state = playerState.HandleInput(this, move, action);
+        if(state != null)
+        {
+            playerState = state;
+            playerState.OnEnter(this);
+        }
+    }
 }

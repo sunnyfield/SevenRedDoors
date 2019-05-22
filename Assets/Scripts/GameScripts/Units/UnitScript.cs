@@ -179,4 +179,9 @@ public class UnitScript : MonoBehaviour
     {
         sideHorizontal = 0;
     }
+
+    public void SetDrag(float drag)
+    {
+        rigidBodyUnit2d.drag = drag;
+    }
 }
