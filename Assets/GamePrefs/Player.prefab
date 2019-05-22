@@ -143,8 +143,7 @@ MonoBehaviour:
   currentGround: []
   whatToHit:
     serializedVersion: 2
-    m_Bits: 20480
-  state: 2
+    m_Bits: 20992
 --- !u!70 &1958497948144402279
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -4941,7 +4940,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1958497948473580936}
   - component: {fileID: 1958497948473580983}
-  - component: {fileID: 1958497948473580982}
   m_Layer: 8
   m_Name: ReloadFlagSprite
   m_TagString: Untagged
@@ -5011,25 +5009,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &1958497948473580982
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958497948473580937}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d8720ea1d639cad4cb94346b66f6398b, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6946415075744304072
 GameObject:
   m_ObjectHideFlags: 0

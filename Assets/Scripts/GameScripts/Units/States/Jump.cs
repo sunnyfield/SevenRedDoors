@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Run : IPlayerState
+public class Jump : IPlayerState
 {
-    private const string name = "Run";
+    private const string name = "Jump";
     public string GetName()
     {
         return name;
@@ -12,6 +12,7 @@ public class Run : IPlayerState
     public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
     {
         player.SetDrag(1f);
+        if(action == ActionInput.JUMP) player.Jump();
         switch (move)
         {
             case MoveInput.RIGHT:
@@ -21,9 +22,10 @@ public class Run : IPlayerState
                 player.MoveLeft();
                 break;
             case MoveInput.NONE:
+                player.Stop();
                 break;
         }
-        player.SetAnimation((int)AnimationState.RUN);
+        player.SetAnimation((int)AnimationState.IDLE);
     }
 
     public void StateUpdate(PlayerController player)
@@ -34,8 +36,7 @@ public class Run : IPlayerState
 
     public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
-        if (action == ActionInput.JUMP) return player.jumpState;
-        switch(move)
+        switch (move)
         {
             case MoveInput.RIGHT:
                 player.MoveRight();
@@ -44,9 +45,10 @@ public class Run : IPlayerState
                 player.MoveLeft();
                 break;
             case MoveInput.NONE:
-                return player.idleState;
+                player.Stop();
+                break;
         }
-        
+
         return null;
     }
 }

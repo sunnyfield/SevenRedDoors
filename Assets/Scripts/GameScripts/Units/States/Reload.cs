@@ -2,31 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlayerState
+public class Reload : IPlayerState
 {
-    IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action);
-    void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE);
-    void StateUpdate(PlayerController player);
-    void OnExit(PlayerController player);
-    string GetName();
-}
-
-public class Idle : IPlayerState
-{
-    private const string name = "Idle";
+    private const float reloadRate = 1f;
+    private float timer = 0f;
+    private const string name = "Reload";
     public string GetName()
     {
         return name;
     }
     public void OnEnter(PlayerController player, MoveInput move, ActionInput action)
     {
-        player.SetDrag(1000000f);
-        player.Stop();
-        player.SetAnimation((int)AnimationState.IDLE);
+        player.ReloadAnimationStart();
+        timer = reloadRate;
     }
 
     public void StateUpdate(PlayerController player)
-    { }
+    {
+        if (timer > 0) timer -= Time.deltaTime;
+        else
+        {
+            if (player.AddAmmo()) timer = reloadRate;
+            else player.SetIdleState();
+        }
+    }
 
     public void OnExit(PlayerController player)
     { }
@@ -36,7 +35,6 @@ public class Idle : IPlayerState
         if (action == ActionInput.JUMP) return player.jumpState;
         if (move != MoveInput.NONE) return player.runState;
         if (action == ActionInput.FIRE) return player.fireState;
-        if (action == ActionInput.RELOAD) return player.reloadState;
 
         return null;
     }

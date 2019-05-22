@@ -13,7 +13,10 @@ public class UnitScript : MonoBehaviour
     public Transform groundCheckPoint;
     public float overrlapRadius = 0.03f;
     protected Coroutine takeDamageBlinkingRoutine = null;
-    Vector2 moveVector = Vector2.zero;
+    private Vector2 moveVector = Vector2.zero;
+
+    protected List<GameObject> currentGround = new List<GameObject>();
+
     float moveIncrement = 0.1f;
 
 
@@ -37,19 +40,41 @@ public class UnitScript : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-            Invoke("GroundCheck", 0.01f);
+        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
+        {
+            if (collision.contacts[0].normal.y > 0.35f)
+            {
+                if (currentGround[0] == null)
+                    currentGround[0] = collision.gameObject;
+                else
+                    currentGround.Add(collision.gameObject);
+
+                if (sideHorizontal == 0) grounded = true;
+                else grounded = true;
+            }
+        }
     }
 
     protected virtual void OnCollisionExit2D(Collision2D collision)
     {
-            Invoke("GroundCheck", 0.01f);
+        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
+        {
+            if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
+            {
+                currentGround[0] = null;
+                grounded = false;
+            }
+            else
+                currentGround.Remove(collision.gameObject);
+        }
     }
 
     protected virtual void UnitSetup()
     {
         unitsSprite = GetComponentInChildren<SpriteRenderer>();
         rigidBodyUnit2d = GetComponent<Rigidbody2D>();
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animator>();
+        if (anim == null) anim = GetComponentInChildren<Animator>();
 
         groundCheckPoint = transform.GetChild(1);
         firePoint = transform.GetChild(0);
@@ -141,12 +166,12 @@ public class UnitScript : MonoBehaviour
             //    rigidBodyUnit2d.drag = 1000000f;
 
             rigidBodyUnit2d.velocity = moveVector;
-            anim.SetInteger("speedH", Mathf.Abs(sideHorizontal));
+            //anim.SetInteger("speedH", Mathf.Abs(sideHorizontal));
         }
         else
         {
             //rigidBodyUnit2d.velocity = Vector2.zero;
-            anim.SetInteger("speedH", 0);
+            //anim.SetInteger("speedH", 0);
         }
     }
 

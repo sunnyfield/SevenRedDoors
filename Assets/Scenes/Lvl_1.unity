@@ -27207,11 +27207,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402296, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1958497948144402277, guid: c1628a6ecca2a03448617e514fd06603,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -27266,36 +27261,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402275, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: whatIsGround.m_Bits
-      value: 13824
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402275, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: state
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402278, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402278, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402278, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958497948144402278, guid: c1628a6ecca2a03448617e514fd06603,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1628a6ecca2a03448617e514fd06603, type: 3}
