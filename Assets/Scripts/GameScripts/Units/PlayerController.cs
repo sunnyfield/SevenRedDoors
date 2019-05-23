@@ -38,10 +38,10 @@ public enum AnimationState
 }
 
 public enum MoveInput
-{
-    RIGHT,
-    LEFT,
-    NONE
+{ 
+    LEFT = -1,
+    NONE,
+    RIGHT
 }
 
 public enum ActionInput
@@ -68,14 +68,14 @@ public class PlayerController : UnitScript
     private Coroutine bounceDelayRoutine = null;
     private GameObject boxRef;
     [SerializeField]
-    //private List<GameObject> currentGround = new List<GameObject>();
+    private List<GameObject> currentGround = new List<GameObject>();
 
     private IPlayerState playerState;
-    public Idle idleState = new Idle();
-    public Run runState = new Run();
-    public Jump jumpState = new Jump();
-    public Fire fireState = new Fire();
-    public Reload reloadState = new Reload();
+    public readonly Idle idleState = new Idle();
+    public readonly Run runState = new Run();
+    public readonly Jump jumpState = new Jump();
+    public readonly Attack fireState = new Attack();
+    public readonly Reload reloadState = new Reload();
 
     public LayerMask whatToHit;
 
@@ -88,14 +88,8 @@ public class PlayerController : UnitScript
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
     }
 
     private void Start()
@@ -124,12 +118,10 @@ public class PlayerController : UnitScript
         SetJumpState();
     }
 
-    private void FixedUpdate()
-    {
-        Move();
-    }
+    private void FixedUpdate() { Move(); }
+    private void Update() { playerState.StateUpdate(this); }
 
-    protected override void OnCollisionEnter2D(Collision2D collision)
+    protected void OnCollisionEnter2D(Collision2D collision)
     {
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
@@ -151,7 +143,7 @@ public class PlayerController : UnitScript
         }
     }
 
-    protected override void OnCollisionExit2D(Collision2D collision)
+    protected void OnCollisionExit2D(Collision2D collision)
     {
         Profiler.BeginSample("Collision exit check");
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
@@ -199,16 +191,6 @@ public class PlayerController : UnitScript
         }
     }
 
-    private void Update()
-    {
-        playerState.StateUpdate(this);
-    }
-
-    public void SetAnimation(int state)
-    {
-        anim.SetInteger("STATE", state);
-    }
-
     public void SetIdleState()
     {
         playerState = idleState;
@@ -227,10 +209,7 @@ public class PlayerController : UnitScript
         playerState.OnEnter(this);
     }
 
-    public void ReloadAnimationStart()
-    {
-        StartCoroutine(ReloadAnimation());
-    }
+    public void ReloadAnimationStart() { StartCoroutine(ReloadAnimation()); }
 
     public bool AddAmmo()
     {
@@ -240,17 +219,21 @@ public class PlayerController : UnitScript
             GameController.instance.AmmoBarIncreaseUI();
             return true;
         }
-
         return false;
     }
 
-    public void Jump()
+    public bool TakeAmmo()
     {
-            rigidBodyUnit2d.drag = 1f;
-            grounded = false;
-            anim.SetBool("ground", false);
-            rigidBodyUnit2d.velocity += Vector2.up * jumpForce;
+        if(ammo > 0)
+        {
+            ammo--;
+            GameController.instance.AmmoBarDecreaseUI();
+            return true;
+        }
+        return false;
     }
+
+    public void Jump() { rigidBodyUnit2d.velocity += Vector2.up * jumpForce; }
 
     private void Bounce(Collision2D collision)
     {
@@ -292,50 +275,35 @@ public class PlayerController : UnitScript
 
     private void Respawn()
     {
-        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(1.3f));
         rigidBodyUnit2d.velocity = Vector2.zero;
         transform.position = respawnPosition;       
     }
 
     public void Shoot()
     {
-        //if (ammo > 0 && grounded && !isAttack && enableMovement && rigidBodyUnit2d.velocity.magnitude < 0.01f)
+        float projectileDist = 0f;
+        float fireRange = cameraFollow.camLenght / 2f + firePoint.right.x * (cameraFollow.transform.position.x - transform.position.x) - 0.4f;
+
+        RaycastHit2D hit = Physics2D.Raycast(firePoint.position, firePoint.right, fireRange, whatToHit);
+        if (hit)
         {
-            float projectileDist = 0f;
-            float fireRange = 100f;
-
-            fireRange = cameraFollow.camLenght/2f + firePoint.right.x * (cameraFollow.transform.position.x - transform.position.x) - 0.4f;
-
-            RaycastHit2D hit = Physics2D.Raycast(firePoint.position, firePoint.right, fireRange, whatToHit);
-            if (hit)
+            if (hit.transform.CompareTag("Boxes"))
             {
-                if (hit.transform.CompareTag("Boxes"))
-                {
                     boxRef = hit.transform.gameObject;
                     Invoke("BoxDestroy", hit.distance / 60f);
-                }
-
-                else if (hit.transform.CompareTag("Zombie"))
-                    hit.transform.GetComponent<IZombie>().TakeDamage();
-
-                projectileDist = hit.distance;
             }
-            else
-                projectileDist = fireRange;
+            else if (hit.transform.CompareTag("Zombie")) hit.transform.GetComponent<ICanDie>().TakeDamage();
 
-
-            ammo--;
-            GameController.instance.AmmoBarDecreaseUI();
-
-            anim.SetTrigger("shoot");
-            StartCoroutine(CameraFollow.instance.Recoil());
-
-            projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
-            if(projectileClone != null)
-                projectileClone.maxExistDistance = projectileDist;
-            
-            gunCaseParticleSystem.Emit(1);
+            projectileDist = hit.distance;
         }
+        else projectileDist = fireRange;
+
+        CameraFollow.instance.Recoil();
+
+        projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
+        if(projectileClone != null) projectileClone.maxExistDistance = projectileDist;
+            
+        gunCaseParticleSystem.Emit(1);
     }
 
     private void BoxDestroy()
@@ -343,42 +311,6 @@ public class PlayerController : UnitScript
         Pool.Pull(Group.VFX_BoxCrush, boxRef.transform.position, Quaternion.identity, 1f);
         Destroy(boxRef);
     }
-
-    //public void Reload()
-    //{
-    //    if (!isReloading)
-    //    {
-    //        StartCoroutine(ReloadConditionsCheck());
-    //        StartCoroutine(ReloadWithDelay());
-    //    }
-    //}
-
-    //private IEnumerator ReloadWithDelay()
-    //{
-    //    while (isReloading)
-    //    {
-    //        yield return new WaitForSeconds(1f);
-    //        if(isReloading)
-    //        {
-    //            ammo++;
-    //            GameController.instance.AmmoBarIncreaseUI();
-    //        }
-    //    }
-    //}
-
-    //private IEnumerator ReloadConditionsCheck()
-    //{
-    //    isReloading = true;
-    //    StartCoroutine(RloadAnimation());
-    //    while (isReloading)
-    //    {
-    //        if ((rigidBodyUnit2d.velocity.magnitude > 0.01) || (ammo > 4) || isAttack)
-    //        {
-    //            isReloading = false;
-    //        }
-    //        yield return null;
-    //    }
-    //}
 
     private IEnumerator ReloadAnimation()
     {

@@ -152,7 +152,9 @@ public class CameraFollow : MonoBehaviour
             transform.position = new Vector3(Mathf.Clamp(focusPosition.x, leftBordet, rightBorder) + recoil, Mathf.Clamp(focusPosition.y, bottomBorder, topBorder), -10f);
     }
 
-    public IEnumerator Recoil()
+    public void Recoil() { StartCoroutine(RecoilRoutine()); }
+
+    public IEnumerator RecoilRoutine()
     {
         recoil = -PlayerController.instance.transform.right.x * 0.06f;
         yield return new WaitForSeconds(0.08f);

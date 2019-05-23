@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UnitScript : MonoBehaviour
+public interface ICanDie
+{
+    void TakeDamage();
+}
+
+public class UnitScript : MonoBehaviour, ICanDie
 {
     protected Animator anim;
     protected Rigidbody2D rigidBodyUnit2d;
@@ -15,11 +20,7 @@ public class UnitScript : MonoBehaviour
     protected Coroutine takeDamageBlinkingRoutine = null;
     private Vector2 moveVector = Vector2.zero;
 
-    protected List<GameObject> currentGround = new List<GameObject>();
-
     float moveIncrement = 0.1f;
-
-
 
     protected float maxSpeed = 4.5f;
     protected float lerpSpeed = 20f;
@@ -27,8 +28,7 @@ public class UnitScript : MonoBehaviour
     public int sideHorizontal;
 
     protected byte healthPoints;
-    [SerializeField]
-    protected bool grounded = false;
+
     [SerializeField]
     public bool enableMovement = true;
 
@@ -37,37 +37,6 @@ public class UnitScript : MonoBehaviour
     //    Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
     //    Gizmos.DrawSphere(groundCheckLeft.position, overrlapRadius);
     //}
-
-    protected virtual void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
-        {
-            if (collision.contacts[0].normal.y > 0.35f)
-            {
-                if (currentGround[0] == null)
-                    currentGround[0] = collision.gameObject;
-                else
-                    currentGround.Add(collision.gameObject);
-
-                if (sideHorizontal == 0) grounded = true;
-                else grounded = true;
-            }
-        }
-    }
-
-    protected virtual void OnCollisionExit2D(Collision2D collision)
-    {
-        if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
-        {
-            if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
-            {
-                currentGround[0] = null;
-                grounded = false;
-            }
-            else
-                currentGround.Remove(collision.gameObject);
-        }
-    }
 
     protected virtual void UnitSetup()
     {
@@ -158,15 +127,7 @@ public class UnitScript : MonoBehaviour
             }
             moveVector.y = rigidBodyUnit2d.velocity.y;
 
-            //if (!grounded)
-            //    rigidBodyUnit2d.drag = 1f;
-            //else if (Mathf.Abs(moveVector.x) > 0 || moveVector.y > 0)
-            //    rigidBodyUnit2d.drag = 1f;
-            //else if (Mathf.Abs(moveVector.x) <= 0.001)
-            //    rigidBodyUnit2d.drag = 1000000f;
-
             rigidBodyUnit2d.velocity = moveVector;
-            //anim.SetInteger("speedH", Mathf.Abs(sideHorizontal));
         }
         else
         {
@@ -183,11 +144,10 @@ public class UnitScript : MonoBehaviour
     private void GroundCheck()
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheckPoint.position, -groundCheckPoint.up, overrlapRadius, whatIsGround);
-        if (hit && hit.distance <= 0.01f)
-            grounded = true;
-        else
-            grounded = false;
-        anim.SetBool("ground", grounded);
+        //if (hit && hit.distance <= 0.01f)
+        //    grounded = true;
+        //else
+        //    grounded = false;
     }
 
     public void MoveRight()
@@ -208,5 +168,10 @@ public class UnitScript : MonoBehaviour
     public void SetDrag(float drag)
     {
         rigidBodyUnit2d.drag = drag;
+    }
+
+    public void SetAnimation(int state)
+    {
+        anim.SetInteger("STATE", state);
     }
 }

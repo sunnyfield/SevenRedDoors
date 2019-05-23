@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IZombie
-{
-    void TakeDamage();
-}
-
-public class ZombieBigController : UnitScript, IZombie
+public class ZombieBigController : UnitScript
 {
     public LayerMask whatToHit;
     private Vector2 startPosition;
@@ -35,12 +30,11 @@ public class ZombieBigController : UnitScript, IZombie
         startPosition = transform.position;
     }
 
-    protected override void OnCollisionEnter2D(Collision2D collision)
+    protected void OnCollisionEnter2D(Collision2D collision)
     {
         float size, offset;
         float threshold = 0.5f;
 
-        base.OnCollisionEnter2D(collision);
         if(collision.gameObject.CompareTag("Ground"))
         {
             size = collision.gameObject.GetComponent<BoxCollider2D>().size.x;
@@ -50,9 +44,8 @@ public class ZombieBigController : UnitScript, IZombie
         }
     }
 
-    protected override void OnCollisionExit2D(Collision2D collision)
+    protected void OnCollisionExit2D(Collision2D collision)
     {
-        base.OnCollisionExit2D(collision);
         if (collision.gameObject.CompareTag("Ground"))
         {
             transform.position = startPosition;

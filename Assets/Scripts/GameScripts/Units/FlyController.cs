@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlyController : UnitScript, IZombie
+public class FlyController : UnitScript
 {
     public LayerMask whatToHit;
     private Vector2 startPosition;
@@ -40,13 +40,6 @@ public class FlyController : UnitScript, IZombie
 
         firePoint = transform.GetChild(0);
     }
-
-    protected override void OnCollisionEnter2D(Collision2D collision)
-    { }
-
-
-    protected override void OnCollisionExit2D(Collision2D collision)
-    { }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

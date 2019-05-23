@@ -7,10 +7,9 @@ public class Reload : IPlayerState
     private const float reloadRate = 1f;
     private float timer = 0f;
     private const string name = "Reload";
-    public string GetName()
-    {
-        return name;
-    }
+
+    public string GetName() { return name; }
+
     public void OnEnter(PlayerController player, MoveInput move, ActionInput action)
     {
         player.ReloadAnimationStart();
@@ -27,8 +26,7 @@ public class Reload : IPlayerState
         }
     }
 
-    public void OnExit(PlayerController player)
-    { }
+    public void OnExit(PlayerController player) { }
 
     public IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
