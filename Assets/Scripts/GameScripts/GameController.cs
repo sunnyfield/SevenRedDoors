@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
@@ -9,88 +8,22 @@ public class GameController : MonoBehaviour
     public static GameController instance;
 
     [SerializeField]
-    public GameObject[] poolablePrefabs;// = new GameObject[System.Enum.GetValues(typeof(Group)).Length];
+    public GameObject[] poolablePrefabs;// = new GameObject[System.Enum.GetValues(typeof(Group)).Length];  
 
-    private PlayerController player;
+    public uint CoinCount { get; private set; } = 0;
 
-    //[SerializeField]
-    private GameObject pausePanel;
-    //[SerializeField]
-    private Button restartButton;
-    //[SerializeField]
-    private Button quitButton;
-    //[SerializeField]
-    private GameObject keyImageUI;
-    //[SerializeField]
-    private Image damageTakeVingetteUI;
-    private Coroutine damageTakeVingetteRoutine = null;
-    //[SerializeField]
-    private Text gameOverText;
-    //[SerializeField]
-    private Text winText;
-    //[SerializeField]
-    private Text coinCountText;
-    //[SerializeField]
-    private Image healthBar;
-    //[SerializeField]
-    private Image ammoBar;
-    //[SerializeField]
-
-    private GameObject controlButtons;
-
-
-    private uint coinCount = 0;
-
-    public bool gameIsPaused = false;
-    private bool gameOver = false;
+    private bool gameIsPaused = false;
+    private bool gameEnd = false;
+    private bool key = false;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }  
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
     }
 
     private void Start()
     {
-        player = GameObject.Find("/Scene/Player").GetComponent<PlayerController>();
-
-        //UI
-        keyImageUI = GameObject.Find("/Canvas/KeyFlag");
-        keyImageUI.SetActive(false);
-
-        coinCountText = GameObject.Find("/Canvas/CountCoin").GetComponent<Text>();
-        coinCountText.text = coinCount.ToString();
-
-        healthBar = GameObject.Find("/Canvas/HealthBar").GetComponent<Image>();
-
-        damageTakeVingetteUI = GameObject.Find("/Canvas/DamageTakeVinjette").GetComponent<Image>();
-        damageTakeVingetteUI.gameObject.SetActive(false);
-
-        ammoBar = GameObject.Find("/Canvas/AmmoBar").GetComponent<Image>();
-
-        restartButton = GameObject.Find("/Canvas/PausePanel/Restart").GetComponent<Button>();
-        restartButton.onClick.AddListener(Restart);
-
-        quitButton = GameObject.Find("/Canvas/PausePanel/MainMenu").GetComponent<Button>();
-        quitButton.onClick.AddListener(() => SceneManager.LoadScene(0));
-
-        pausePanel = GameObject.Find("/Canvas/PausePanel");
-        pausePanel.SetActive(false);
-
-        gameOverText = GameObject.Find("/Canvas/GameOverText").GetComponent<Text>();
-        gameOverText.gameObject.SetActive(false);
-
-        winText = GameObject.Find("/Canvas/WinText").GetComponent<Text>();
-        winText.gameObject.SetActive(false);
-
-        controlButtons = GameObject.Find("/Canvas/ControlButtons");
-
         Time.timeScale = 1f;
 
         for (int i = 0; i < Pool.objectsToPool.Length; i++)
@@ -98,158 +31,68 @@ public class GameController : MonoBehaviour
             var poolable = new PoolableObject(poolablePrefabs[i], (Group)i, 5);
             Pool.objectsToPool[i] = poolable;
         }
-
         Pool.CreatePools();
-    }
-
-    private void Update()
-    {
-        
-        if (Input.GetKeyDown(KeyCode.Escape) && !gameIsPaused && !gameOver)
-            Pause();
-        else if (Input.GetKeyDown(KeyCode.Escape) && gameIsPaused && !gameOver)
-            UnPause();
-
-        HandleInput(player);
     }
 
     public void CoinIncrease()
     {
-        coinCount++;
-        coinCountText.text = coinCount.ToString();
-    }
-
-    public void HealthBarDecreaseUI()
-    {
-        healthBar.fillAmount -= 0.333f;
-        DamageTakeUIEffect();
-    }
-
-    public void HealthBarIncreaseUI()
-    {
-        healthBar.fillAmount += 0.333f;
-    }
-
-    public void HealthBarOnZeroUI()
-    {
-        healthBar.fillAmount = 0;
-        DamageTakeUIEffect();
-    }
-
-    private void DamageTakeUIEffect()
-    {
-        if (damageTakeVingetteRoutine == null)
-            damageTakeVingetteRoutine = StartCoroutine(DamageTakeVingetteFade());
-        else
-        {
-            StopCoroutine(damageTakeVingetteRoutine);
-            damageTakeVingetteRoutine = StartCoroutine(DamageTakeVingetteFade());
-        }
-    }
-
-    private IEnumerator DamageTakeVingetteFade()
-    {
-        damageTakeVingetteUI.gameObject.SetActive(true);
-
-        yield return StartCoroutine(AlphaToOne());
-        yield return StartCoroutine(AlphaToZero());
-
-        damageTakeVingetteUI.gameObject.SetActive(false);
-        damageTakeVingetteRoutine = null;
-    }
-
-    private IEnumerator AlphaToOne()
-    {
-        while (damageTakeVingetteUI.color.a <= 0.3)
-        {
-            damageTakeVingetteUI.color = Color.Lerp(damageTakeVingetteUI.color, Color.white, Time.deltaTime * 25f);
-            yield return null;
-        }
-        damageTakeVingetteUI.color = Color.white;
-    }
-
-    private IEnumerator AlphaToZero()
-    {
-        while (damageTakeVingetteUI.color.a >= 0.05)
-        {
-            damageTakeVingetteUI.color = Color.Lerp(damageTakeVingetteUI.color, Color.clear, Time.deltaTime * 5f);
-            yield return null;
-        }
-        damageTakeVingetteUI.color = Color.clear;
-    }
-
-    public void AmmoBarDecreaseUI()
-    {
-        ammoBar.fillAmount -= 0.2f;
-    }
-
-    public void AmmoBarIncreaseUI()
-    {
-        ammoBar.fillAmount += 0.2f;
+        CoinCount++;
+        UIController.instance.CoinIncrease();
     }
 
     public void GetKey()
     {
-        keyImageUI.SetActive(true);
+        key = true;
+        UIController.instance.GetKey();
     }
 
     public void GameWinCheck()
     {
-        if (keyImageUI.activeInHierarchy)
+        if (key)
         {
             Pause();
-            winText.text = "YOU WIN!";
-            winText.gameObject.SetActive(true);
+            gameEnd = true;
+            UIController.instance.WinScreen();   
         }
         //else "FIND A KEY"
     }
 
     public void GameOver()
     {
+        UIController.instance.HealthBarOnZero();
+        UIController.instance.GameOverScreen();
         Pause();
-        gameOver = true;
-        gameOverText.text = "Game Over";
-        gameOverText.gameObject.SetActive(true);
+        gameEnd = true;
     }
 
-    public void Pause()
+    public void PauseToggle()
     {
-        controlButtons.SetActive(false);
-        pausePanel.SetActive(true);
+        if(!gameEnd)
+        {
+            if(!gameIsPaused) Pause();
+            else UnPause();
+        }
+    }
+
+    private void Pause()
+    {
+        UIController.instance.PauseScreen();
         Time.timeScale = 0f;
         gameIsPaused = true;
     }
 
-    public void UnPause()
+    private void UnPause()
     {
-        controlButtons.SetActive(true);
-        pausePanel.SetActive(false);
+        UIController.instance.HidePauseScreen();
         Time.timeScale = 1f;
         gameIsPaused = false;
     }
 
     public void Restart()
     {
-        gameOver = false;    
+        gameEnd = false;    
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         System.GC.Collect();
         Time.timeScale = 1f;
-        //controlButtons.SetActive(true);
-    }
-
-    private void HandleInput(PlayerController player)
-    {
-        MoveInput move = MoveInput.NONE;
-        ActionInput action = ActionInput.NONE;
-
-        if ((int)Input.GetAxisRaw("Horizontal") == 1) move = MoveInput.RIGHT;
-        else if ((int)Input.GetAxisRaw("Horizontal") == -1) move = MoveInput.LEFT;
-
-        if (Input.GetButtonDown("Jump")) action = ActionInput.JUMP;
-        else if (Input.GetKeyDown(KeyCode.F)) action = ActionInput.FIRE;
-        else if (Input.GetKeyDown(KeyCode.R)) action = ActionInput.RELOAD;
-        else if (Input.GetKeyDown(KeyCode.E)) action = ActionInput.ACTIVATE;
-
-        player.HandleInput(move, action);
     }
 }

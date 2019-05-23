@@ -216,7 +216,7 @@ public class PlayerController : UnitScript
         if(ammo < maxAmmo)
         {
             ammo++;
-            GameController.instance.AmmoBarIncreaseUI();
+            UIController.instance.AmmoBarIncrease();
             return true;
         }
         return false;
@@ -227,7 +227,7 @@ public class PlayerController : UnitScript
         if(ammo > 0)
         {
             ammo--;
-            GameController.instance.AmmoBarDecreaseUI();
+            UIController.instance.AmmoBarDecrease();
             return true;
         }
         return false;
@@ -355,7 +355,7 @@ public class PlayerController : UnitScript
         if (healthPoints < 3)
         {
             healthPoints++;
-            GameController.instance.HealthBarIncreaseUI();
+            UIController.instance.HealthBarIncrease();
             Destroy(health);
         }   
     }
@@ -365,21 +365,16 @@ public class PlayerController : UnitScript
         if (healthPoints - 1 > 0)
         {
             healthPoints--;
-            GameController.instance.HealthBarDecreaseUI();
+            UIController.instance.HealthBarDecrease();
             SingleRoutineStart(ref takeDamageBlinkingRoutine, TakeDamageBlinking(blinkCount));
         }
-        else
-        {
-            SingleRoutineStart(ref takeDamageBlinkingRoutine, TakeDamageBlinking(blinkCount));
-            Invoke("Death", 0.3f);
-        }
+        else Death();
     }
     
     public override void Death()
     {
         healthPoints = 0;
         gameObject.SetActive(false);
-        GameController.instance.HealthBarOnZeroUI();
         GameController.instance.GameOver();
     }
 

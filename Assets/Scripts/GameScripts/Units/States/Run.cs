@@ -5,10 +5,8 @@ using UnityEngine;
 public class Run : IPlayerState, IZombieState
 {
     private const string name = "Run";
-    public string GetName()
-    {
-        return name;
-    }
+
+    public string GetName() { return name; }
 
     public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
     {

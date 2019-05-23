@@ -136,10 +136,7 @@ public class UnitScript : MonoBehaviour, ICanDie
         }
     }
 
-    public void Flip()
-    {
-        transform.Rotate(0f, 180f, 0f, Space.Self);
-    }
+    public void Flip() { transform.Rotate(0f, 180f, 0f, Space.Self); }
 
     private void GroundCheck()
     {

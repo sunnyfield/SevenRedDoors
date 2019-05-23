@@ -43,10 +43,10 @@ TagManager:
   - RedDoor
   - Boxes
   - Interactive
-  - IgnoreZombie
+  - IgnoreEnemy
   - Trap
   - FireBall
-  - Zombie
+  - Enemy
   - BottomLevelLimit
   - Coins
   - Health

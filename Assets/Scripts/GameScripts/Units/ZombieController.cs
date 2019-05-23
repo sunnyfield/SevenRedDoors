@@ -10,10 +10,14 @@ public class ZombieController : UnitScript
 
     private float seeDistance = 4f;
     [SerializeField]
-    private float leftBorder;
+    public float leftBorder;
     [SerializeField]
-    private float rightBorder;
+    public float rightBorder;
     private bool inDamageRange;
+
+    public AIBehavior behavior = AIBehavior.PASSIVE;
+    public float restRaitTimer;
+    public float restTimer;
 
     private IZombieState zombieState;
     public readonly Idle idleState = new Idle();
@@ -27,7 +31,7 @@ public class ZombieController : UnitScript
         healthPoints = 3;
         startPosition = transform.position;
         zombieState = idleState;
-        StartCoroutine(PassiveBehavior());    
+        //StartCoroutine(PassiveBehavior());    
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
@@ -51,11 +55,7 @@ public class ZombieController : UnitScript
 
     private void FixedUpdate() { Move(); }
 
-    private Vector2 VectorToPlayer()
-    {
-        Vector2 directionToPlayer = PlayerController.instance.transform.position - transform.position;
-        return directionToPlayer;
-    }
+    private Vector2 VectorToPlayer() { return PlayerController.instance.transform.position - transform.position; }
 
     private IEnumerator PassiveBehavior()
     {
@@ -115,7 +115,7 @@ public class ZombieController : UnitScript
             }
             else
             {
-                HandleInput((MoveInput)(int)transform.right.x, ActionInput.FIRE);
+                HandleInput((MoveInput)(int)transform.right.x, ActionInput.NONE);
 
                 if (direction.x * sideHorizontal < 0) HandleInput((MoveInput)(-sideHorizontal), ActionInput.NONE);
                 else if ((transform.position.x < leftBorder) && sideHorizontal < 0) HandleInput(MoveInput.NONE, ActionInput.NONE);
