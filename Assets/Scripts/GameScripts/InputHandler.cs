@@ -6,7 +6,7 @@ public class InputHandler : MonoBehaviour
 {
     private PlayerController player;
 
-    private static bool instanced = false;
+    //private static bool instanced = false;
 
     private void Awake()
     {

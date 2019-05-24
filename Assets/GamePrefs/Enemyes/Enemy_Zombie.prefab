@@ -196,17 +196,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whatIsGround:
     serializedVersion: 2
-    m_Bits: 5632
+    m_Bits: 8393216
   groundCheckPoint: {fileID: 0}
   overrlapRadius: 0.03
   sideHorizontal: 0
-  grounded: 0
   enableMovement: 1
   whatToHit:
     serializedVersion: 2
     m_Bits: 256
   leftBorder: 0
   rightBorder: 0
+  behavior: 0
+  restRaitTimer: 0
+  restTimer: 0
 --- !u!95 &3627470684265706354
 Animator:
   serializedVersion: 3

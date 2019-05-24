@@ -5,15 +5,17 @@ using UnityEngine;
 public enum AIBehavior
 {
     PASSIVE,
-    AGRESSIVE,
-    REST
+    REST,
+    FOLLOW,
+    ATTACK
 }
 
 public class AIManager : MonoBehaviour
 {
     public Transform target;
 
-    List<ZombieController> zombies = new List<ZombieController>();
+    [HideInInspector]
+    static public List<ZombieController> zombies = new List<ZombieController>();
     //List<ZombieBigController> bigZombies = new List<ZombieBigController>();
     //List<FlyController> demons = new List<FlyController>();
 
@@ -47,6 +49,17 @@ public class AIManager : MonoBehaviour
         vectorsToTarget = new Vector2[zombies.Count];
         moveInputs = new MoveInput[zombies.Count];
         actionInputs = new ActionInput[zombies.Count];
+
+        for(int i = 0; i < zombies.Count; i++)
+        {
+            moveInputs[i] = MoveInput.RIGHT;
+            actionInputs[i] = ActionInput.NONE;
+        }
+
+        foreach(ZombieController zombie in zombies)
+        {
+            zombie.restRaitTimer = Random.Range(1.5f, 3f);
+        }
     }
 
     void Update()
@@ -59,13 +72,13 @@ public class AIManager : MonoBehaviour
     private void VectorToTargetUpdate()
     {
         int i = 0;
-        foreach(ZombieController zombie in zombies) { vectorsToTarget[i] = target.position - zombie.transform.position; /*print("vec to target " + i + " is " + vectorsToTarget[i]);*/ i++;  }
+        foreach(ZombieController zombie in zombies) { vectorsToTarget[i] = target.position - zombie.transform.position; i++;  }
     }
 
     private void UpdateInput()
     {
         int i = 0;
-        foreach (ZombieController zombie in zombies) { zombie.HandleInput(moveInputs[i], actionInputs[i]); print("move input " + moveInputs[i].ToString() + " action input " + actionInputs[i].ToString()); i++;}
+        foreach (ZombieController zombie in zombies) { zombie.HandleInput(moveInputs[i], actionInputs[i]); i++;}
     }
 
     private void ZombieBehaviorUpdate()
@@ -73,17 +86,14 @@ public class AIManager : MonoBehaviour
         int zombieIndex = 0;
         foreach(ZombieController zombie in zombies)
         {
-            zombie.restRaitTimer = Random.Range(1.5f, 3f);
-            moveInputs[zombieIndex] = MoveInput.NONE;
-            actionInputs[zombieIndex] = ActionInput.NONE;
-
             switch (zombie.behavior)
             {
                 case AIBehavior.PASSIVE:
                     if (vectorsToTarget[zombieIndex].magnitude < zombieSeeDistance)
                     {
+                        if (zombie.transform.right.x * vectorsToTarget[zombieIndex].x < 0) moveInputs[zombieIndex] = (MoveInput)(-(int)moveInputs[zombieIndex]);
                         moveInputs[zombieIndex] = MoveInput.RIGHT;
-                        zombie.behavior = AIBehavior.AGRESSIVE;
+                        zombie.behavior = AIBehavior.FOLLOW;
                     }
                     else
                     {
@@ -91,38 +101,63 @@ public class AIManager : MonoBehaviour
                         {
                             if (zombie.transform.position.x < zombie.leftBorder) moveInputs[zombieIndex] = MoveInput.RIGHT;
                             else if (zombie.transform.position.x > zombie.rightBorder) moveInputs[zombieIndex] = MoveInput.LEFT;
-
                             zombie.restRaitTimer -= Time.deltaTime;
                         }
                         else
                         {
                             zombie.restRaitTimer = Random.Range(1.5f, 3f);
-
+                            zombie.restTimer = Random.Range(0.8f, 1.3f);
                             moveInputs[zombieIndex] = MoveInput.NONE;
                             zombie.behavior = AIBehavior.REST;
                         }
                     }
                     break;
 
-                case AIBehavior.AGRESSIVE:
-                    if (zombie.transform.right.x * vectorsToTarget[zombieIndex].x < 0) moveInputs[zombieIndex] = (MoveInput)(-(int)moveInputs[zombieIndex]);
-
+                case AIBehavior.ATTACK:
                     if (vectorsToTarget[zombieIndex].magnitude < zombieSeeDistance)
                     {
                         if (vectorsToTarget[zombieIndex].magnitude <= zombieAttackDistance)
                         {
                             if (zombie.transform.right.x * vectorsToTarget[zombieIndex].x < 0) zombie.Flip();
-                            moveInputs[zombieIndex] = MoveInput.NONE;
-                            actionInputs[zombieIndex] = ActionInput.FIRE;
                         }
                         else
                         {
                             actionInputs[zombieIndex] = ActionInput.NONE;
+                            moveInputs[zombieIndex] = (MoveInput)zombie.transform.right.x;
+                            zombie.behavior = AIBehavior.FOLLOW;
+                        }
+                    }
+                    else
+                    {
+                        if (zombie.transform.position.x < zombie.leftBorder) moveInputs[zombieIndex] = MoveInput.RIGHT;
+                        else if (zombie.transform.position.x > zombie.rightBorder) moveInputs[zombieIndex] = MoveInput.LEFT;
+                        else moveInputs[zombieIndex] = (MoveInput)zombie.transform.right.x;
+                        zombie.behavior = AIBehavior.PASSIVE;
+                    }
+                    break;
 
-                            if (zombie.transform.right.x * vectorsToTarget[zombieIndex].x < 0) moveInputs[zombieIndex] = (MoveInput)(-transform.right.x);
+                case AIBehavior.FOLLOW:
+                    if (vectorsToTarget[zombieIndex].magnitude < zombieSeeDistance)
+                    {
+                        if (vectorsToTarget[zombieIndex].magnitude > zombieAttackDistance)
+                        {
+                            if (zombie.transform.right.x * vectorsToTarget[zombieIndex].x < 0) moveInputs[zombieIndex] = (MoveInput)(-zombie.transform.right.x);
                             else if ((zombie.transform.position.x < zombie.leftBorder) && moveInputs[zombieIndex] < 0) moveInputs[zombieIndex] = MoveInput.NONE;
                             else if ((zombie.transform.position.x > zombie.rightBorder) && moveInputs[zombieIndex] > 0) moveInputs[zombieIndex] = MoveInput.NONE;
                         }
+                        else
+                        {
+                            actionInputs[zombieIndex] = ActionInput.FIRE;
+                            moveInputs[zombieIndex] = MoveInput.NONE;
+                            zombie.behavior = AIBehavior.ATTACK;
+                        }
+                    }
+                    else
+                    {
+                        if (zombie.transform.position.x < zombie.leftBorder) moveInputs[zombieIndex] = MoveInput.RIGHT;
+                        else if (zombie.transform.position.x > zombie.rightBorder) moveInputs[zombieIndex] = MoveInput.LEFT;
+                        else moveInputs[zombieIndex] = (MoveInput)zombie.transform.right.x;
+                        zombie.behavior = AIBehavior.PASSIVE;
                     }
                     break;
 
@@ -131,6 +166,7 @@ public class AIManager : MonoBehaviour
                     else
                     {
                         zombie.restTimer = Random.Range(0.8f, 1.3f);
+                        moveInputs[zombieIndex] = (MoveInput)(-zombie.transform.right.x);
                         zombie.behavior = AIBehavior.PASSIVE;
                     }
                     break;
