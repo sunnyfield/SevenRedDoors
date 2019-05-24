@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ZombieController : UnitScript
-{
+{ 
     public LayerMask whatToHit;
     private Vector2 startPosition;
-    GameObject ground;
+    private GameObject ground;
+    public Transform Target { get; private set; }
 
-    private float seeDistance = 4f;
     [HideInInspector]
     public float leftBorder = -100f;
     [HideInInspector]
@@ -17,6 +17,10 @@ public class ZombieController : UnitScript
 
     [HideInInspector]
     public AIBehavior behavior = AIBehavior.PASSIVE;
+    public IZombieBehaviorState behaviorState;
+    public readonly Passive passiveBehavior = new Passive();
+    public readonly Rest restBehavior = new Rest();
+    public readonly Follow followBehavior = new Follow();
     [HideInInspector]
     public float restRaitTimer;
     [HideInInspector]
@@ -33,7 +37,10 @@ public class ZombieController : UnitScript
         maxSpeed = 1.5f;
         healthPoints = 3;
         startPosition = transform.position;
-        zombieState = idleState;   
+        SetIdleState();
+        Target = PlayerController.instance.transform;
+        behaviorState = passiveBehavior;
+        behaviorState.OnEnter(this);
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
@@ -64,7 +71,11 @@ public class ZombieController : UnitScript
 
     protected void OnCollisionExit2D(Collision2D collision) { if (collision.gameObject == ground) transform.position = startPosition; }
 
-    private void Update() { zombieState.StateUpdate(this); }  
+    private void Update()
+    {
+        AIUpdate();
+        zombieState.StateUpdate(this);
+    }  
 
     private void FixedUpdate() { Move(); }
 
@@ -98,6 +109,16 @@ public class ZombieController : UnitScript
     {
         zombieState = runState;
         zombieState.OnEnter(this);
+    }
+
+    public void AIUpdate()
+    {
+        IZombieBehaviorState state = behaviorState.StateUpdate(this);
+        if (state != null)
+        {
+            behaviorState = state;
+            behaviorState.OnEnter(this);
+        }
     }
 
     public void HandleInput(MoveInput move, ActionInput action)

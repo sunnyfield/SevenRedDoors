@@ -26,8 +26,6 @@ public class Reload : IPlayerState
         }
     }
 
-    public void OnExit(PlayerController player) { }
-
     public IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
         if (action == ActionInput.JUMP) return player.jumpState;

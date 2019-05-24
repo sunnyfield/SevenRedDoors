@@ -57,6 +57,7 @@ public class PlayerController : UnitScript
 {
     public static PlayerController instance;
 
+    public LayerMask bounceLayers;
     private CameraFollow cameraFollow;
     private Transform reloadFlag;
     private Transform reloadArrowIcon;
@@ -65,9 +66,8 @@ public class PlayerController : UnitScript
     private Transform startPoint;
     [SerializeField]
     private Vector3 respawnPosition;
-    private Coroutine bounceDelayRoutine = null;
     private GameObject boxRef;
-    [SerializeField]
+    [HideInInspector]
     private List<GameObject> currentGround = new List<GameObject>();
 
     private IPlayerState playerState;
@@ -76,6 +76,7 @@ public class PlayerController : UnitScript
     public readonly Jump jumpState = new Jump();
     public readonly Attack fireState = new Attack();
     public readonly Reload reloadState = new Reload();
+    public readonly Bounce bounceState = new Bounce();
 
     public LayerMask whatToHit;
 
@@ -132,14 +133,17 @@ public class PlayerController : UnitScript
                 else
                     currentGround.Add(collision.gameObject);
 
-                if (sideHorizontal == 0) SetIdleState();
-                else SetRunState();
+                if (playerState != bounceState)
+                {
+                    if (sideHorizontal == 0) SetIdleState();
+                    else SetRunState();
+                }
             }
         }
-        else if (collision.gameObject.layer == (int)Layer.Zombie || collision.gameObject.layer == (int)Layer.Traps)
+        else if (bounceLayers == (bounceLayers | 1 << collision.gameObject.layer))
         {
             TakeDamage();
-            //Bounce(collision);
+            Bounce(collision);
         }
     }
 
@@ -151,10 +155,9 @@ public class PlayerController : UnitScript
             if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
             {
                 currentGround[0] = null;
-                SetJumpState();
+                if(playerState != bounceState) SetJumpState();
             }
-            else
-                currentGround.Remove(collision.gameObject);       
+            else currentGround.Remove(collision.gameObject);       
         }
         Profiler.EndSample();
     }
@@ -165,7 +168,7 @@ public class PlayerController : UnitScript
         {
             case (int)Layer.Traps:
                 TakeDamage();
-                //Bounce(collision);
+                Bounce(collision);
                 break;
             case (int)Layer.Coins:
                 PickUpCoin(collision.gameObject);
@@ -191,6 +194,32 @@ public class PlayerController : UnitScript
         }
     }
 
+    protected override void Move()
+    {
+        if (playerState == runState || playerState == jumpState)
+        {
+            if (transform.right.x * sideHorizontal < 0) Flip();
+
+            if (sideHorizontal != 0)
+            {
+                if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
+                {
+                    moveVector.x += moveIncrement * sideHorizontal;
+                    moveIncrement *= 2f;
+                }
+                else moveVector.x = sideHorizontal * maxSpeed;
+            }
+            else
+            {
+                moveVector.x = 0f;
+                moveIncrement = 0.1f;
+            }
+            moveVector.y = rigidBodyUnit2d.velocity.y;
+
+            rigidBodyUnit2d.velocity = moveVector;
+        }
+    }
+
     public void SetIdleState()
     {
         playerState = idleState;
@@ -206,6 +235,12 @@ public class PlayerController : UnitScript
     public void SetRunState()
     {
         playerState = runState;
+        playerState.OnEnter(this);
+    }
+
+    private void SetBounceState()
+    {
+        playerState = bounceState;
         playerState.OnEnter(this);
     }
 
@@ -233,44 +268,34 @@ public class PlayerController : UnitScript
         return false;
     }
 
+    public bool IsGrounded()
+    {
+        if (currentGround[0] != null) return true;
+        return false;
+    }
+
     public void Jump() { rigidBodyUnit2d.velocity += Vector2.up * jumpForce; }
 
     private void Bounce(Collision2D collision)
     {
-
-        ContactPoint2D point = collision.GetContact(0);
+        SetBounceState();
+        ContactPoint2D point = collision.contacts[0];
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
-        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(0.15f));
-        rigidBodyUnit2d.velocity = new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
+        rigidBodyUnit2d.velocity += new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
     }
 
     private void Bounce(Collider2D collider)
-    {
-        float x;
-        //state = State.BOUNCE;
-        SingleRoutineStart(ref bounceDelayRoutine, BounceDelay(0.15f));
+    { 
+        SetBounceState();
         Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
-        if(rb2d != null)
-        {
-            rigidBodyUnit2d.velocity = new Vector2(rb2d.velocity.x * 2.5f, rigidBodyUnit2d.velocity.y);
-        }
+
+        if (rb2d != null) { rigidBodyUnit2d.velocity = new Vector2(rb2d.velocity.x * 2.5f, rigidBodyUnit2d.velocity.y); }
         else
         {
+            float x;
             x = rigidBodyUnit2d.velocity.x;
-            if (Mathf.Abs(x) > 0f)
-                rigidBodyUnit2d.velocity = new Vector2(-Mathf.Sign(x) * (x / x) * 5f, rigidBodyUnit2d.velocity.y);
+            if (Mathf.Abs(x) > 0f) rigidBodyUnit2d.velocity += new Vector2(-Mathf.Sign(x) * (x / x) * 8f, rigidBodyUnit2d.velocity.y);
         }
-    }
-
-    private IEnumerator BounceDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        bounceDelayRoutine = null;
-        RaycastHit2D hit = Physics2D.Raycast(groundCheckPoint.position, -groundCheckPoint.up, overrlapRadius, whatIsGround);
-        //if (hit && hit.distance <= 0.01f)
-            //state = State.IDLE;
-        //else
-            //state = State.JUMP;
     }
 
     private void Respawn()

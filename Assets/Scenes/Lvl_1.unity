@@ -5936,7 +5936,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 439696619}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 7.08, y: -3.95, z: 0}
+  m_LocalPosition: {x: -17.5, y: -6.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 665544604}
@@ -10600,6 +10600,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Zombie
       objectReference: {fileID: 0}
+    - target: {fileID: 3627470684265706344, guid: 7587984c752392f45aa0cfb372ee6a42,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3627470684265706357, guid: 7587984c752392f45aa0cfb372ee6a42,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14017,7 +14022,7 @@ PrefabInstance:
     - target: {fileID: 8764079706564978635, guid: c0203f41e21b9be4db727e02960e9a49,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.54
+      value: -2.11
       objectReference: {fileID: 0}
     - target: {fileID: 8764079706564978635, guid: c0203f41e21b9be4db727e02960e9a49,
         type: 3}
@@ -14063,6 +14068,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1494141717338605678, guid: c0203f41e21b9be4db727e02960e9a49,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0203f41e21b9be4db727e02960e9a49, type: 3}

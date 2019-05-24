@@ -7,6 +7,7 @@ public class Run : IPlayerState, IZombieState
     private const string name = "Run";
 
     public string GetName() { return name; }
+    private MoveInput moveState = MoveInput.NONE;
 
     public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
     {
@@ -22,6 +23,7 @@ public class Run : IPlayerState, IZombieState
             case MoveInput.NONE:
                 break;
         }
+        moveState = move;
         player.SetAnimation((int)AnimationState.RUN);
     }
 
@@ -42,28 +44,33 @@ public class Run : IPlayerState, IZombieState
         zombie.SetAnimation((int)AnimationState.RUN);
     }
 
-    public void StateUpdate(PlayerController player)
-    { }
+    public void StateUpdate(PlayerController player) { }
 
-    public void StateUpdate(ZombieController zombie)
-    { }
+    public void StateUpdate(ZombieController zombie) { }
 
     public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
         if (action == ActionInput.JUMP) return player.jumpState;
-        switch(move)
+        switch (move)
         {
             case MoveInput.RIGHT:
-                player.MoveRight();
+                if (moveState != move)
+                {
+                    player.MoveRight();
+                    moveState = move;
+                }
                 break;
             case MoveInput.LEFT:
-                player.MoveLeft();
+                if (moveState != move)
+                {
+                    player.MoveLeft();
+                    moveState = move;
+                }
                 break;
             case MoveInput.NONE:
                 if (action == ActionInput.FIRE) return player.fireState;
                 else return player.idleState;
         }
-        
         return null;
     }
 
@@ -81,7 +88,6 @@ public class Run : IPlayerState, IZombieState
                 if (action == ActionInput.FIRE) return zombie.attackState;
                 else return zombie.idleState;
         }
-
         return null;
     }
 }

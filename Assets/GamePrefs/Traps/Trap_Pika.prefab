@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7440135473672742915}
   m_Layer: 15
   m_Name: Pika_1
-  m_TagString: Untagged
+  m_TagString: Traps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 4250159438351640768}
   m_Layer: 15
   m_Name: Pika_1 (1)
-  m_TagString: Untagged
+  m_TagString: Traps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 448236490457061074}
   m_Layer: 15
   m_Name: Pika_2
-  m_TagString: Untagged
+  m_TagString: Traps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

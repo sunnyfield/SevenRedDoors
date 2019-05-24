@@ -137,10 +137,11 @@ MonoBehaviour:
   groundCheckPoint: {fileID: 1958497947249284843}
   overrlapRadius: 0.03
   sideHorizontal: 0
-  grounded: 0
   enableMovement: 1
+  bounceLayers:
+    serializedVersion: 2
+    m_Bits: 163840
   respawnPosition: {x: 0, y: 0, z: 0}
-  currentGround: []
   whatToHit:
     serializedVersion: 2
     m_Bits: 20992

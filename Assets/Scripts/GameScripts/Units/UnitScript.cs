@@ -18,9 +18,9 @@ public class UnitScript : MonoBehaviour, ICanDie
     public Transform groundCheckPoint;
     public float overrlapRadius = 0.03f;
     protected Coroutine takeDamageBlinkingRoutine = null;
-    private Vector2 moveVector = Vector2.zero;
+    protected Vector2 moveVector = Vector2.zero;
 
-    float moveIncrement = 0.1f;
+    protected float moveIncrement = 0.1f;
 
     protected float maxSpeed = 4.5f;
     protected float lerpSpeed = 20f;
@@ -104,36 +104,26 @@ public class UnitScript : MonoBehaviour, ICanDie
     }
 
     protected virtual void Move()
-    {
-        
-        if (enableMovement)
-        {
-            if (transform.right.x * sideHorizontal < 0)
-                Flip();
-            if (sideHorizontal != 0)
-            {
-                if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
-                {
-                    moveVector.x += moveIncrement * sideHorizontal;
-                    moveIncrement *= 2f;
-                }
-                else
-                    moveVector.x = sideHorizontal * maxSpeed;
-            }
-            else
-            {
-                moveIncrement = 0.1f;
-                moveVector.x = 0f;
-            }
-            moveVector.y = rigidBodyUnit2d.velocity.y;
+    {  
+        if (transform.right.x * sideHorizontal < 0) Flip();
 
-            rigidBodyUnit2d.velocity = moveVector;
+        if (sideHorizontal != 0)
+        {
+            if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
+            {
+                moveVector.x += moveIncrement * sideHorizontal;
+                moveIncrement *= 2f;
+            }
+            else moveVector.x = sideHorizontal * maxSpeed;
         }
         else
         {
-            //rigidBodyUnit2d.velocity = Vector2.zero;
-            //anim.SetInteger("speedH", 0);
+            moveVector.x = 0f;
+            moveIncrement = 0.1f;
         }
+        moveVector.y = rigidBodyUnit2d.velocity.y;
+
+        rigidBodyUnit2d.velocity = moveVector;
     }
 
     public void Flip() { transform.Rotate(0f, 180f, 0f, Space.Self); }
@@ -162,13 +152,7 @@ public class UnitScript : MonoBehaviour, ICanDie
         sideHorizontal = 0;
     }
 
-    public void SetDrag(float drag)
-    {
-        rigidBodyUnit2d.drag = drag;
-    }
+    public void SetDrag(float drag) { rigidBodyUnit2d.drag = drag; }
 
-    public void SetAnimation(int state)
-    {
-        anim.SetInteger("STATE", state);
-    }
+    public void SetAnimation(int state) { anim.SetInteger("STATE", state); }
 }
