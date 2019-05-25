@@ -70,14 +70,6 @@ public class PlayerController : UnitScript
     [HideInInspector]
     private List<GameObject> currentGround = new List<GameObject>();
 
-    private IPlayerState playerState;
-    public readonly Idle idleState = new Idle();
-    public readonly Run runState = new Run();
-    public readonly Jump jumpState = new Jump();
-    public readonly Attack fireState = new Attack();
-    public readonly Reload reloadState = new Reload();
-    public readonly Bounce bounceState = new Bounce();
-
     public LayerMask whatToHit;
 
     private const float jumpForce = 10.5f;
@@ -116,11 +108,11 @@ public class PlayerController : UnitScript
         transform.rotation = startPoint.rotation;
         respawnPosition = startPoint.position;
 
-        SetJumpState();
+        SetState(jumpState);
     }
 
     private void FixedUpdate() { Move(); }
-    private void Update() { playerState.StateUpdate(this); }
+    private void Update() { unitState.StateUpdate(this); }
 
     protected void OnCollisionEnter2D(Collision2D collision)
     {
@@ -133,10 +125,10 @@ public class PlayerController : UnitScript
                 else
                     currentGround.Add(collision.gameObject);
 
-                if (playerState != bounceState)
+                if (unitState != bounceState)
                 {
-                    if (sideHorizontal == 0) SetIdleState();
-                    else SetRunState();
+                    if (sideHorizontal == 0) SetState(idleState);
+                    else SetState(runState);
                 }
             }
         }
@@ -155,7 +147,7 @@ public class PlayerController : UnitScript
             if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
             {
                 currentGround[0] = null;
-                if(playerState != bounceState) SetJumpState();
+                if(unitState != bounceState) SetState(jumpState);
             }
             else currentGround.Remove(collision.gameObject);       
         }
@@ -196,7 +188,7 @@ public class PlayerController : UnitScript
 
     protected override void Move()
     {
-        if (playerState == runState || playerState == jumpState)
+        if (unitState == runState || unitState == jumpState)
         {
             if (transform.right.x * sideHorizontal < 0) Flip();
 
@@ -218,30 +210,6 @@ public class PlayerController : UnitScript
 
             rigidBodyUnit2d.velocity = moveVector;
         }
-    }
-
-    public void SetIdleState()
-    {
-        playerState = idleState;
-        playerState.OnEnter(this);
-    }
-
-    public void SetJumpState()
-    {
-        playerState = jumpState;
-        playerState.OnEnter(this);
-    }
-
-    public void SetRunState()
-    {
-        playerState = runState;
-        playerState.OnEnter(this);
-    }
-
-    private void SetBounceState()
-    {
-        playerState = bounceState;
-        playerState.OnEnter(this);
     }
 
     public void ReloadAnimationStart() { StartCoroutine(ReloadAnimation()); }
@@ -278,15 +246,15 @@ public class PlayerController : UnitScript
 
     private void Bounce(Collision2D collision)
     {
-        SetBounceState();
+        SetState(bounceState);
         ContactPoint2D point = collision.contacts[0];
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
         rigidBodyUnit2d.velocity += new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
     }
 
     private void Bounce(Collider2D collider)
-    { 
-        SetBounceState();
+    {
+        SetState(bounceState);
         Rigidbody2D rb2d = collider.GetComponent<Rigidbody2D>();
 
         if (rb2d != null) { rigidBodyUnit2d.velocity = new Vector2(rb2d.velocity.x * 2.5f, rigidBodyUnit2d.velocity.y); }
@@ -346,7 +314,7 @@ public class PlayerController : UnitScript
 
         reloadFlag.gameObject.SetActive(true);
 
-        while (playerState == reloadState)
+        while (unitState == reloadState)
         {
             if (reloadFlag.localScale.x >= 1.2)
                 scaleSpeed = -0.6f;
@@ -403,13 +371,19 @@ public class PlayerController : UnitScript
         GameController.instance.GameOver();
     }
 
+    public void SetState(IState state)
+    {
+        unitState = state;
+        unitState.OnEnter(this);
+    }
+
     public void HandleInput(MoveInput move, ActionInput action)
     {
-        IPlayerState state = playerState.HandleInput(this, move, action);
-        if(state != null)
+        IState state = unitState.HandleInput(this, move, action);
+        if (state != null)
         {
-            playerState = state;
-            playerState.OnEnter(this, move, action);
+            unitState = state;
+            unitState.OnEnter(this, move, action);
         }
     }
 }

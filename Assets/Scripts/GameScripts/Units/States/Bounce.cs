@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bounce : IPlayerState
+public class Bounce : BaseState
 {
     private const float bounceTime = 0.15f;
     private float timer = 0;
-    private const string name = "Bounce";
+    private new const string name = "Bounce";
 
-    public string GetName() { return name; }
-
-    public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
+    public override void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         player.Stop();
         player.SetDrag(1f);
@@ -18,15 +16,15 @@ public class Bounce : IPlayerState
         player.SetAnimation((int)AnimationState.IDLE);
     }
 
-    public void StateUpdate(PlayerController player)
+    public override void StateUpdate(PlayerController player)
     {
         if (timer > 0) timer -= Time.deltaTime;
         else
         {
-            if (player.IsGrounded()) player.SetIdleState();
-            else player.SetJumpState();
+            if (player.IsGrounded()) player.SetState(player.idleState);
+            else player.SetState(player.jumpState);
         }
     }
 
-    public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action) { return null; }
+    public override IState HandleInput(PlayerController player, MoveInput move, ActionInput action) { return null; }
 }

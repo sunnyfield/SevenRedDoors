@@ -2,35 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Reload : IPlayerState
+public class Reload : BaseState
 {
     private const float reloadRate = 1f;
     private float timer = 0f;
-    private const string name = "Reload";
+    private new const string name = "Reload";
 
-    public string GetName() { return name; }
 
-    public void OnEnter(PlayerController player, MoveInput move, ActionInput action)
+    public override void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         player.ReloadAnimationStart();
         timer = reloadRate;
     }
 
-    public void StateUpdate(PlayerController player)
+    public override void StateUpdate(PlayerController player)
     {
         if (timer > 0) timer -= Time.deltaTime;
         else
         {
             if (player.AddAmmo()) timer = reloadRate;
-            else player.SetIdleState();
+            else player.SetState(player.idleState);
         }
     }
 
-    public IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
+    public override IState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
         if (action == ActionInput.JUMP) return player.jumpState;
         if (move != MoveInput.NONE) return player.runState;
-        if (action == ActionInput.FIRE) return player.fireState;
+        if (action == ActionInput.FIRE) return player.attackState;
 
         return null;
     }

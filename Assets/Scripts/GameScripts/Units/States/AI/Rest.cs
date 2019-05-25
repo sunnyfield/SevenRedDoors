@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rest : IZombieBehaviorState
+public class Rest : BaseAIBehaviorState
 {
-    static Transform target;
-    Transform zombie;
+    float timer;
 
-    public IZombieBehaviorState StateUpdate(ZombieController zombie)
+    public override void OnEnter(ZombieController zombie)
     {
-        return null;
+        zombie.HandleInput(MoveInput.NONE, ActionInput.NONE);
+        timer = Random.Range(0.8f, 1.3f);
     }
 
-    public void OnEnter(ZombieController zombieIn)
+    public override IBehavior StateUpdate(ZombieController zombie)
     {
-        if (target == null) target = zombieIn.Target;
-        if (zombie == null) zombie = zombieIn.transform;
+        if(timer > 0)
+        {
+            timer -= Time.deltaTime;
+            return null;  
+        }
+        else return zombie.passiveBehavior;
     }
 }

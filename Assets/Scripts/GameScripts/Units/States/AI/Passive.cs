@@ -2,25 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IZombieBehaviorState
+public class Passive : BaseAIBehaviorState
 {
-    IZombieBehaviorState StateUpdate(ZombieController zombie);
-    void OnEnter(ZombieController zombie);
-}
+    float restRaitTimer;
 
-public class Passive : IZombieBehaviorState
-{
-    static Transform target;
-    Transform zombie;
-
-    public IZombieBehaviorState StateUpdate(ZombieController zombie)
+    public override void OnEnter(ZombieController zombie)
     {
-        return null;
+        if (actorTransform == null) actorTransform = zombie.transform;
+        move = (MoveInput)(-actorTransform.right.x);
+        restRaitTimer = Random.Range(1.5f, 3f);
     }
 
-    public void OnEnter(ZombieController zombieIn)
+    public override IBehavior StateUpdate(ZombieController zombie)
     {
-        if (target == null) target = zombieIn.Target;
-        if (zombie == null) zombie = zombieIn.transform;
-    }
+        VectorToTarget();
+        if (vectorToTarget.x >= zombie.seeDistance)
+        {
+            if (restRaitTimer > 0)
+            {
+                if (actorTransform.position.x < zombie.leftBorder) move = MoveInput.RIGHT;
+                else if (actorTransform.position.x > zombie.rightBorder) move = MoveInput.LEFT;
+                restRaitTimer -= Time.deltaTime;
+
+                zombie.HandleInput(move, ActionInput.NONE);
+                return null;
+            }
+            else return zombie.restBehavior;
+        }
+        else return zombie.followBehavior;  
+    }   
 }

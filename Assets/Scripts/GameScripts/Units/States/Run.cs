@@ -2,91 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Run : IPlayerState, IZombieState
+public class Run : BaseState
 {
-    private const string name = "Run";
+    private new const string name = "Run";
 
-    public string GetName() { return name; }
     private MoveInput moveState = MoveInput.NONE;
 
-    public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
+    public override void OnEnter(UnitScript unit, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
-        player.SetDrag(1f);
+        unit.SetDrag(1f);
         switch (move)
         {
             case MoveInput.RIGHT:
-                player.MoveRight();
+                unit.MoveRight();
                 break;
             case MoveInput.LEFT:
-                player.MoveLeft();
+                unit.MoveLeft();
                 break;
             case MoveInput.NONE:
                 break;
         }
         moveState = move;
-        player.SetAnimation((int)AnimationState.RUN);
+        unit.SetAnimation((int)AnimationState.RUN);
     }
 
-    public virtual void OnEnter(ZombieController zombie, MoveInput move, ActionInput action)
+    //public override void OnEnter(PlayerController actor, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
+    //{
+    //    Debug.Log("player's on enter");
+    //}
+
+    public override IState HandleInput(UnitScript unit, MoveInput move, ActionInput action)
     {
-        zombie.SetDrag(1f);
-        switch (move)
-        {
-            case MoveInput.RIGHT:
-                zombie.MoveRight();
-                break;
-            case MoveInput.LEFT:
-                zombie.MoveLeft();
-                break;
-            case MoveInput.NONE:
-                break;
-        }
-        zombie.SetAnimation((int)AnimationState.RUN);
-    }
-
-    public void StateUpdate(PlayerController player) { }
-
-    public void StateUpdate(ZombieController zombie) { }
-
-    public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
-    {
-        if (action == ActionInput.JUMP) return player.jumpState;
+        if (action == ActionInput.JUMP) return unit.jumpState;
         switch (move)
         {
             case MoveInput.RIGHT:
                 if (moveState != move)
                 {
-                    player.MoveRight();
+                    unit.MoveRight();
                     moveState = move;
                 }
                 break;
             case MoveInput.LEFT:
                 if (moveState != move)
                 {
-                    player.MoveLeft();
+                    unit.MoveLeft();
                     moveState = move;
                 }
                 break;
             case MoveInput.NONE:
-                if (action == ActionInput.FIRE) return player.fireState;
-                else return player.idleState;
-        }
-        return null;
-    }
-
-    public virtual IZombieState HandleInput(ZombieController zombie, MoveInput move, ActionInput action)
-    {
-        switch (move)
-        {
-            case MoveInput.RIGHT:
-                zombie.MoveRight();
-                break;
-            case MoveInput.LEFT:
-                zombie.MoveLeft();
-                break;
-            case MoveInput.NONE:
-                if (action == ActionInput.FIRE) return zombie.attackState;
-                else return zombie.idleState;
+                if (action == ActionInput.FIRE) return unit.attackState;
+                else return unit.idleState;
         }
         return null;
     }

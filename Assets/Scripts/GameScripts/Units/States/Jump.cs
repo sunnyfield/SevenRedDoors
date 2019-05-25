@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Jump : IPlayerState
+public class Jump : BaseState
 {
-    private const string name = "Jump";
-    public string GetName() { return name; }
+    private new const string name = "Jump";
+
     private MoveInput moveState = MoveInput.NONE;
-    public virtual void OnEnter(PlayerController player, MoveInput move, ActionInput action)
+
+    public override void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         player.SetDrag(1f);
         if(action == ActionInput.JUMP) player.Jump();
@@ -27,9 +28,7 @@ public class Jump : IPlayerState
         player.SetAnimation((int)AnimationState.IDLE);
     }
 
-    public void StateUpdate(PlayerController player) { }
-
-    public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action)
+    public override IState HandleInput(PlayerController player, MoveInput move, ActionInput action)
     {
         if (moveState != move)
         {

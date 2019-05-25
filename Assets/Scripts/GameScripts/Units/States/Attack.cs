@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Attack : IPlayerState, IZombieState
+public class Attack : BaseState
 {
     private const float fireRate = 0.35f;
     private const float zombieAttackRate = 1.3f;
     private const float zombieAttackDelay = 0.2f;
     private float delayTimer = 0f;
     private float timer = 0f;
-    private const string name = "Fire";
+    private new const string name = "Fire";
 
-    public string GetName() { return name; }
-
-    public void OnEnter(PlayerController player, MoveInput move, ActionInput action)
+    public override void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         if (player.TakeAmmo())
         {
@@ -23,10 +21,10 @@ public class Attack : IPlayerState, IZombieState
             timer = fireRate;
             player.SetAnimation((int)AnimationState.ATTACK);    
         }
-        else player.SetIdleState();
+        else player.SetState(player.idleState);
     }
 
-    public void OnEnter(ZombieController zombie, MoveInput move, ActionInput action)
+    public override void OnEnter(ZombieController zombie, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         zombie.SetDrag(1000000f);
         zombie.Stop();
@@ -35,13 +33,13 @@ public class Attack : IPlayerState, IZombieState
         zombie.SetAnimation((int)AnimationState.ATTACK);
     }
 
-    public void StateUpdate(PlayerController player)
+    public override void StateUpdate(PlayerController player)
     {
         if (timer > 0) timer -= Time.deltaTime;
-        else player.SetIdleState();
+        else player.SetState(player.idleState);
     }
 
-    public void StateUpdate(ZombieController zombie)
+    public override void StateUpdate(ZombieController zombie)
     {
         if (delayTimer > 0) delayTimer -= Time.deltaTime;
         else
@@ -52,11 +50,7 @@ public class Attack : IPlayerState, IZombieState
         }
 
         if (timer > 0) timer -= Time.deltaTime;
-        else zombie.SetIdleState();
+        else zombie.SetState(zombie.idleState);
 
     }
-
-    public virtual IPlayerState HandleInput(PlayerController player, MoveInput move, ActionInput action) { return null; }
-
-    public virtual IZombieState HandleInput(ZombieController zombie, MoveInput move, ActionInput action) { return null; }
 }

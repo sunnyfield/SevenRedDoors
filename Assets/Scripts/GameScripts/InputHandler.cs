@@ -14,7 +14,11 @@ public class InputHandler : MonoBehaviour
         //else Destroy(gameObject);
     }
 
-    void Start() { player = GameObject.Find("/Scene/Player").GetComponent<PlayerController>(); }
+    void Start()
+    { 
+        player = GameObject.Find("/Scene/Player").GetComponent<PlayerController>();
+        BaseAIBehaviorState.target = player.transform;
+    }
 
     void Update()
     {

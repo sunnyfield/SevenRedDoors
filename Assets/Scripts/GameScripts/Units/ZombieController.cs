@@ -2,45 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ZombieController : UnitScript
+public class ZombieController : AIUnit
 { 
-    public LayerMask whatToHit;
+    new public LayerMask whatToHit;
     private Vector2 startPosition;
     private GameObject ground;
     public Transform Target { get; private set; }
 
-    [HideInInspector]
-    public float leftBorder = -100f;
-    [HideInInspector]
-    public float rightBorder = 100f;
     private bool inDamageRange;
 
     [HideInInspector]
     public AIBehavior behavior = AIBehavior.PASSIVE;
-    public IZombieBehaviorState behaviorState;
-    public readonly Passive passiveBehavior = new Passive();
-    public readonly Rest restBehavior = new Rest();
-    public readonly Follow followBehavior = new Follow();
+    public IBehavior behaviorState;
+    
     [HideInInspector]
     public float restRaitTimer;
     [HideInInspector]
     public float restTimer;
 
-    private IZombieState zombieState;
-    public readonly Idle idleState = new Idle();
-    public readonly Run runState = new Run();
-    public readonly Attack attackState = new Attack();
-
     void Start()
     {
         UnitSetup();
+        leftBorder = -100f;
+        rightBorder = 100f;
         maxSpeed = 1.5f;
         healthPoints = 3;
         startPosition = transform.position;
-        SetIdleState();
+        SetState(idleState);
         Target = PlayerController.instance.transform;
         behaviorState = passiveBehavior;
         behaviorState.OnEnter(this);
+
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
@@ -74,7 +66,7 @@ public class ZombieController : UnitScript
     private void Update()
     {
         AIUpdate();
-        zombieState.StateUpdate(this);
+        unitState.StateUpdate(this);
     }  
 
     private void FixedUpdate() { Move(); }
@@ -99,21 +91,9 @@ public class ZombieController : UnitScript
         }
     }
 
-    public void SetIdleState()
-    {
-        zombieState = idleState;
-        zombieState.OnEnter(this);
-    }
-
-    public void SetRunState()
-    {
-        zombieState = runState;
-        zombieState.OnEnter(this);
-    }
-
     public void AIUpdate()
     {
-        IZombieBehaviorState state = behaviorState.StateUpdate(this);
+        IBehavior state = behaviorState.StateUpdate(this);
         if (state != null)
         {
             behaviorState = state;
@@ -121,13 +101,19 @@ public class ZombieController : UnitScript
         }
     }
 
+    public void SetState(IState state)
+    {
+        unitState = state;
+        unitState.OnEnter(this);
+    }
+
     public void HandleInput(MoveInput move, ActionInput action)
     {
-        IZombieState state = zombieState.HandleInput(this, move, action);
+        IState state = unitState.HandleInput(this, move, action);
         if (state != null)
         {
-            zombieState = state;
-            zombieState.OnEnter(this, move, action);
+            unitState = state;
+            unitState.OnEnter(this, move, action);
         }
     }
 }

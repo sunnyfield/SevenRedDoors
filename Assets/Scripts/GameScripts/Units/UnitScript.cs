@@ -20,6 +20,15 @@ public class UnitScript : MonoBehaviour, ICanDie
     protected Coroutine takeDamageBlinkingRoutine = null;
     protected Vector2 moveVector = Vector2.zero;
 
+    protected IState unitState;
+
+    public readonly Idle idleState = new Idle();
+    public readonly Run runState = new Run();
+    public readonly Jump jumpState = new Jump();
+    public readonly Attack attackState = new Attack();
+    public readonly Reload reloadState = new Reload();
+    public readonly Bounce bounceState = new Bounce();
+
     protected float moveIncrement = 0.1f;
 
     protected float maxSpeed = 4.5f;
@@ -154,5 +163,5 @@ public class UnitScript : MonoBehaviour, ICanDie
 
     public void SetDrag(float drag) { rigidBodyUnit2d.drag = drag; }
 
-    public void SetAnimation(int state) { anim.SetInteger("STATE", state); }
+    public void SetAnimation(int state) { anim.SetInteger("STATE", state); } 
 }
