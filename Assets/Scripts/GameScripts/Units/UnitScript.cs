@@ -135,7 +135,13 @@ public class UnitScript : MonoBehaviour, ICanDie
         rigidBodyUnit2d.velocity = moveVector;
     }
 
-    public void Flip() { transform.Rotate(0f, 180f, 0f, Space.Self); }
+    public void Flip()
+    {
+        var temp = transform.localPosition;
+        transform.localRotation *= Quaternion.Euler(Vector3.up * 180);
+        transform.localPosition = temp;
+        //transform.Rotate(0f, 180f, 0f);
+    }
 
     private void GroundCheck()
     {

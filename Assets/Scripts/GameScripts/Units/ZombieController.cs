@@ -4,35 +4,30 @@ using UnityEngine;
 
 public class ZombieController : AIUnit
 { 
-    new public LayerMask whatToHit;
     private Vector2 startPosition;
     private GameObject ground;
-    public Transform Target { get; private set; }
 
+    [HideInInspector]
+    public float yThreshold = 0.65f;
     private bool inDamageRange;
+    
 
     [HideInInspector]
-    public AIBehavior behavior = AIBehavior.PASSIVE;
     public IBehavior behaviorState;
-    
-    [HideInInspector]
-    public float restRaitTimer;
-    [HideInInspector]
-    public float restTimer;
 
     void Start()
     {
         UnitSetup();
         leftBorder = -100f;
         rightBorder = 100f;
-        maxSpeed = 1.5f;
+        maxSpeed = 1.3f;
         healthPoints = 3;
-        startPosition = transform.position;
+        seeDistance = 5f;
+        attackDistance = 1f;
+        startPosition = transform.localPosition;
         SetState(idleState);
-        Target = PlayerController.instance.transform;
         behaviorState = passiveBehavior;
         behaviorState.OnEnter(this);
-
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
@@ -52,7 +47,7 @@ public class ZombieController : AIUnit
             }
             else
             {
-                if ((collision.contacts[0].point - (Vector2)transform.position).y < 0)
+                if ((collision.contacts[0].point - (Vector2)transform.localPosition).y < 0)
                 {
                     if (sideHorizontal == -1) leftBorder = collision.contacts[0].point.x + threshold;
                     else if (sideHorizontal == 1) rightBorder = collision.contacts[0].point.x - threshold;
@@ -61,17 +56,16 @@ public class ZombieController : AIUnit
         } 
     }
 
-    protected void OnCollisionExit2D(Collision2D collision) { if (collision.gameObject == ground) transform.position = startPosition; }
+    protected void OnCollisionExit2D(Collision2D collision) { if (collision.gameObject == ground) transform.localPosition = startPosition; }
 
-    private void Update()
+    private void FixedUpdate()
     {
         AIUpdate();
         unitState.StateUpdate(this);
-    }  
+        Move();
+    }
 
-    private void FixedUpdate() { Move(); }
-
-    private Vector2 VectorToPlayer() { return PlayerController.instance.transform.position - transform.position; }
+    private Vector2 VectorToPlayer() { return PlayerController.instance.transform.localPosition - transform.localPosition; }
 
     public void Attack()
     {
@@ -79,14 +73,24 @@ public class ZombieController : AIUnit
         if (target != null) target.GetComponent<ICanDie>().TakeDamage();
     }
 
+    public void SetFollowSpeed()
+    {
+        anim.SetFloat("runSpeed", 1.6f);
+        maxSpeed = 2.2f;
+    }
+    public void SetPassiveSpeed()
+    {
+        anim.SetFloat("runSpeed", 1.0f);
+        maxSpeed = 1.3f;
+    }
+
     public override void Death()
     {
         if (healthPoints != 0)
         {
             healthPoints = 0;     
-            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
-            Pool.Pull(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
-            AIManager.zombies.Remove(this);
+            Pool.Pull(Group.VFX_BloodExplosion, transform.localPosition, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_Meat, transform.localPosition - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
             Destroy(gameObject);
         }
     }

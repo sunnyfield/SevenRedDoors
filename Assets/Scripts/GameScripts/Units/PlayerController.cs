@@ -111,8 +111,11 @@ public class PlayerController : UnitScript
         SetState(jumpState);
     }
 
-    private void FixedUpdate() { Move(); }
-    private void Update() { unitState.StateUpdate(this); }
+    private void FixedUpdate()
+    {
+        Move();
+        unitState.StateUpdate(this);
+    }
 
     protected void OnCollisionEnter2D(Collision2D collision)
     {
@@ -176,7 +179,7 @@ public class PlayerController : UnitScript
                 break;
             case (int)Layer.BottomLevelLimit:
                 TakeDamage();
-                Respawn();
+                ResetPosition();
                 break;
             case (int)Layer.CheckPoint:
                 respawnPosition = collision.gameObject.transform.GetChild(0).position;
@@ -266,7 +269,7 @@ public class PlayerController : UnitScript
         }
     }
 
-    private void Respawn()
+    private void ResetPosition()
     {
         rigidBodyUnit2d.velocity = Vector2.zero;
         transform.position = respawnPosition;       
@@ -312,23 +315,26 @@ public class PlayerController : UnitScript
         Vector3 rotationAngle = new Vector3(0f, 0f, 1f);
         Vector3 scaleIncrement = new Vector3(1f, 1f, 0f);
 
-        reloadFlag.gameObject.SetActive(true);
-
-        while (unitState == reloadState)
+        if (ammo < 5)
         {
-            if (reloadFlag.localScale.x >= 1.2)
-                scaleSpeed = -0.6f;
-            else if (reloadFlag.localScale.x <= 1)
-                scaleSpeed = 0.6f;
+            reloadFlag.gameObject.SetActive(true);
 
-            reloadFlag.localScale += scaleIncrement * Time.deltaTime * scaleSpeed;
-            reloadArrowIcon.Rotate(0f, 0f, 1f * Time.deltaTime * rotationSpeed);
-            yield return null;
+            while (unitState == reloadState && ammo < 5)
+            {
+                if (reloadFlag.localScale.x >= 1.2)
+                    scaleSpeed = -0.6f;
+                else if (reloadFlag.localScale.x <= 1)
+                    scaleSpeed = 0.6f;
+
+                reloadFlag.localScale += scaleIncrement * Time.fixedDeltaTime * scaleSpeed;
+                reloadArrowIcon.Rotate(0f, 0f, 1f * Time.fixedDeltaTime * rotationSpeed);
+                yield return new WaitForFixedUpdate();
+            }
+
+            reloadFlag.localScale = new Vector3(1f, 1f, 1f);
+            reloadArrowIcon.localRotation = Quaternion.identity;
+            reloadFlag.gameObject.SetActive(false);
         }
-
-        reloadFlag.localScale = new Vector3(1f, 1f, 1f);
-        reloadArrowIcon.localRotation = Quaternion.identity;
-        reloadFlag.gameObject.SetActive(false);
     }
 
     private void PickUpCoin(GameObject coin)

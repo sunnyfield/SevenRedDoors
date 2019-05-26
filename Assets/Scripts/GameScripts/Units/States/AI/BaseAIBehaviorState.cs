@@ -33,5 +33,5 @@ public class BaseAIBehaviorState : IBehavior
     //public virtual void OnEnter(ZombieBigController actor) { OnEnter(actor as AIUnit); }
     //public virtual void OnEnter(FlyController actor) { OnEnter(actor as AIUnit); }
 
-    protected void VectorToTarget() { vectorToTarget = target.position - actorTransform.position; }
+    protected void VectorToTarget() { vectorToTarget = target.localPosition - actorTransform.localPosition; }
 }

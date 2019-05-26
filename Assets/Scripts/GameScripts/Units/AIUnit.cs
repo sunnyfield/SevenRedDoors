@@ -13,4 +13,5 @@ public class AIUnit : UnitScript
     public readonly Passive passiveBehavior = new Passive();
     public readonly Rest restBehavior = new Rest();
     public readonly Follow followBehavior = new Follow();
+    public readonly AIAttack aIAttack = new AIAttack();
 }

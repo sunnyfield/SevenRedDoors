@@ -9,19 +9,21 @@ public class Passive : BaseAIBehaviorState
     public override void OnEnter(ZombieController zombie)
     {
         if (actorTransform == null) actorTransform = zombie.transform;
+        zombie.SetPassiveSpeed();
         move = (MoveInput)(-actorTransform.right.x);
-        restRaitTimer = Random.Range(1.5f, 3f);
+        restRaitTimer = Random.Range(2f, 5f);
     }
 
     public override IBehavior StateUpdate(ZombieController zombie)
     {
         VectorToTarget();
-        if (vectorToTarget.x >= zombie.seeDistance)
+        if ((Mathf.Abs(vectorToTarget.x) >= zombie.seeDistance) || (Mathf.Abs(vectorToTarget.y) >= zombie.yThreshold))
         {
             if (restRaitTimer > 0)
             {
-                if (actorTransform.position.x < zombie.leftBorder) move = MoveInput.RIGHT;
-                else if (actorTransform.position.x > zombie.rightBorder) move = MoveInput.LEFT;
+                //Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition);
+                if (actorTransform.localPosition.x <= zombie.leftBorder) move = MoveInput.RIGHT;
+                else if (actorTransform.localPosition.x >= zombie.rightBorder) move = MoveInput.LEFT;
                 restRaitTimer -= Time.deltaTime;
 
                 zombie.HandleInput(move, ActionInput.NONE);
@@ -29,6 +31,6 @@ public class Passive : BaseAIBehaviorState
             }
             else return zombie.restBehavior;
         }
-        else return zombie.followBehavior;  
+        else return zombie.followBehavior;
     }   
 }

@@ -20,20 +20,18 @@ public class ProjectilesMove : MonoBehaviour
         speed = 60f;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if(muzzleFlash == null)
-            muzzleFlash = Pool.Pull(Group.VFX_Muzzle, transform.localPosition, transform.rotation, 0.3f);
+        if(muzzleFlash == null) muzzleFlash = Pool.Pull(Group.VFX_Muzzle, transform.localPosition, transform.rotation, 0.3f);
 
-        transform.localPosition += transform.right * speed * Time.deltaTime;
+        transform.localPosition += transform.right * speed * Time.fixedDeltaTime;
 
         if (Mathf.Abs(transform.localPosition.x - startPosition.x) >= maxExistDistance)
         {
             transform.localPosition = transform.right * maxExistDistance + startPosition;
             speed = 0;
 
-            if (hitFlash == null)
-                hitFlash = Pool.Pull(Group.VFX_Hit, transform.localPosition, transform.localRotation, 0.3f);
+            if (hitFlash == null) hitFlash = Pool.Pull(Group.VFX_Hit, transform.localPosition, transform.localRotation, 0.3f);
 
             Pool.Push(Group.Projectile, gameObject, 0.1f);       
         }
