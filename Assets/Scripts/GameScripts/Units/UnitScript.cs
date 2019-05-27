@@ -113,34 +113,31 @@ public class UnitScript : MonoBehaviour, ICanDie
     }
 
     protected virtual void Move()
-    {  
-        if (transform.right.x * sideHorizontal < 0) Flip();
-
-        if (sideHorizontal != 0)
+    {
+        if (unitState == runState || unitState == jumpState)
         {
+            if (transform.right.x * sideHorizontal < 0)
+            {
+                moveIncrement = 0.1f;
+                Flip();
+            }
+
             if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
             {
                 moveVector.x += moveIncrement * sideHorizontal;
                 moveIncrement *= 2f;
             }
             else moveVector.x = sideHorizontal * maxSpeed;
-        }
-        else
-        {
-            moveVector.x = 0f;
-            moveIncrement = 0.1f;
-        }
-        moveVector.y = rigidBodyUnit2d.velocity.y;
 
-        rigidBodyUnit2d.velocity = moveVector;
+            moveVector.y = rigidBodyUnit2d.velocity.y;
+
+            rigidBodyUnit2d.velocity = moveVector;
+        }
     }
 
     public void Flip()
     {
-        var temp = transform.localPosition;
         transform.localRotation *= Quaternion.Euler(Vector3.up * 180);
-        transform.localPosition = temp;
-        //transform.Rotate(0f, 180f, 0f);
     }
 
     private void GroundCheck()
@@ -162,9 +159,12 @@ public class UnitScript : MonoBehaviour, ICanDie
         sideHorizontal = -1;
     }
 
-    public void Stop()
+    public void Stop(bool resetIncrement)
     {
         sideHorizontal = 0;
+        if (resetIncrement) moveIncrement = 0.1f;
+        moveVector.x = 0f;
+        rigidBodyUnit2d.velocity = new Vector2(0f, rigidBodyUnit2d.velocity.y);
     }
 
     public void SetDrag(float drag) { rigidBodyUnit2d.drag = drag; }

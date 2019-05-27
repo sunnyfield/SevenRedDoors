@@ -10,7 +10,7 @@ public class Bounce : BaseState
 
     public override void OnEnter(PlayerController player, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
-        player.Stop();
+        player.Stop(true);
         player.SetDrag(1f);
         timer = bounceTime;
         player.SetAnimation((int)AnimationState.IDLE);

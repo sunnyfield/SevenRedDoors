@@ -21,7 +21,7 @@ public class Jump : BaseState
                 player.MoveLeft();
                 break;
             case MoveInput.NONE:
-                player.Stop();
+                player.Stop(false);
                 break;
         }
         moveState = move;
@@ -43,7 +43,7 @@ public class Jump : BaseState
                     moveState = move;
                     break;
                 case MoveInput.NONE:
-                    player.Stop();
+                    player.Stop(false);
                     moveState = move;
                     break;
             }

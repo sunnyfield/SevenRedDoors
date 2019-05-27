@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
     public static CameraFollow instance;
     //private Transform target;
     private CapsuleCollider2D targetCollider;
+    private Transform targetPoint;
     public Vector2 focusAreaSize;
     private Vector2 focusPosition;
     public Transform bottomLeftCameraBorder;
@@ -45,34 +46,66 @@ public class CameraFollow : MonoBehaviour
         float left, right;
         float top, bottom;
 
-        public FocusArea(Bounds targetBounds, Vector2 size)
+        //public FocusArea(Bounds targetBounds, Vector2 size)
+        //{
+        //    left = targetBounds.center.x - size.x / 2f;
+        //    right = targetBounds.center.x + size.x / 2f;
+        //    bottom = targetBounds.min.y;
+        //    top = targetBounds.min.y + size.y;
+
+        //    velocity = Vector2.zero;
+        //    center = new Vector2((left + right) / 2f, (top + bottom) / 2f);
+        //}
+
+        public FocusArea(Vector2 size)
         {
-            left = targetBounds.center.x - size.x / 2f;
-            right = targetBounds.center.x + size.x / 2f;
-            bottom = targetBounds.min.y;
-            top = targetBounds.min.y + size.y;
+            left = -size.x / 2f;
+            right = size.x / 2f;
+            bottom = -size.y / 2f;
+            top = size.y / 2f;
 
             velocity = Vector2.zero;
             center = new Vector2((left + right) / 2f, (top + bottom) / 2f);
         }
 
-        public void Update(Bounds targetBounds)
+        //public void Update(Bounds targetBounds)
+        //{
+        //    float shiftX = 0;
+        //    float shiftY = 0;
+
+        //    if (targetBounds.min.x < left)
+        //        shiftX = targetBounds.min.x - left;
+        //    else if (targetBounds.max.x > right)
+        //        shiftX = targetBounds.max.x - right;
+
+        //    left += shiftX;
+        //    right += shiftX;
+
+        //    if (targetBounds.min.y < bottom)
+        //        shiftY = targetBounds.min.y - bottom;
+        //    else if (targetBounds.max.y > top)
+        //        shiftY = targetBounds.max.y - top;
+
+        //    top += shiftY;
+        //    bottom += shiftY;
+
+        //    center = new Vector2((left + right) / 2f, (top + bottom) / 2f);
+        //    velocity = new Vector2(shiftX, shiftY);
+        //}
+
+        public void Update(Vector3 targetPoint)
         {
             float shiftX = 0;
             float shiftY = 0;
 
-            if (targetBounds.min.x < left)
-                shiftX = targetBounds.min.x - left;
-            else if (targetBounds.max.x > right)
-                shiftX = targetBounds.max.x - right;
+            if (targetPoint.x < left) shiftX = targetPoint.x - left;
+            else if (targetPoint.x > right) shiftX = targetPoint.x - right;
 
             left += shiftX;
             right += shiftX;
 
-            if (targetBounds.min.y < bottom)
-                shiftY = targetBounds.min.y - bottom;
-            else if (targetBounds.max.y > top)
-                shiftY = targetBounds.max.y - top;
+            if (targetPoint.y < bottom) shiftY = targetPoint.y - bottom;
+            else if (targetPoint.y > top) shiftY = targetPoint.y - top;
 
             top += shiftY;
             bottom += shiftY;
@@ -99,9 +132,10 @@ public class CameraFollow : MonoBehaviour
     private void Start()
     {
         Camera camera = GetComponent<Camera>();
+        targetPoint = PlayerController.instance.gameObject.transform.GetChild(4);
         targetCollider = PlayerController.instance.GetComponent<CapsuleCollider2D>();
 
-        focusArea = new FocusArea(targetCollider.bounds, focusAreaSize);
+        focusArea = new FocusArea(focusAreaSize);
 
         camLenght = camera.ViewportToWorldPoint(new Vector3(1, 1, 1)).x - camera.ViewportToWorldPoint(new Vector3(0, 1, 1)).x;
         camHeight = camera.ViewportToWorldPoint(new Vector3(1, 1, 1)).y - camera.ViewportToWorldPoint(new Vector3(1, 0, 1)).y;
@@ -112,9 +146,9 @@ public class CameraFollow : MonoBehaviour
         rightBorder = topRightCameraBorder.position.x - camLenght / 2f;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        focusArea.Update(targetCollider.bounds);
+        focusArea.Update(targetPoint.position);
 
         focusPosition = focusArea.center + Vector2.up * verticalOffset;
 
@@ -161,9 +195,9 @@ public class CameraFollow : MonoBehaviour
         recoil = 0f;
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
-    //    Gizmos.DrawCube(focusArea.center, focusAreaSize);
-    //}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
+        Gizmos.DrawCube(focusArea.center, focusAreaSize);
+    }
 }

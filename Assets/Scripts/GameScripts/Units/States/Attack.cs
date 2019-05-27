@@ -16,7 +16,7 @@ public class Attack : BaseState
         if (player.TakeAmmo())
         {
             player.SetDrag(1000000f);
-            player.Stop();
+            player.Stop(true);
             player.Shoot();
             timer = fireRate;
             player.SetAnimation((int)AnimationState.ATTACK);    
@@ -27,7 +27,7 @@ public class Attack : BaseState
     public override void OnEnter(ZombieController zombie, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         zombie.SetDrag(1000000f);
-        zombie.Stop();
+        zombie.Stop(true);
         delayTimer = zombieAttackDelay;
         timer = zombieAttackRate;
         zombie.SetAnimation((int)AnimationState.ATTACK);

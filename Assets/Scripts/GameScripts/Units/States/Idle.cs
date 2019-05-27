@@ -9,7 +9,7 @@ public class Idle : BaseState
     public override void OnEnter(UnitScript unit, MoveInput move = MoveInput.NONE, ActionInput action = ActionInput.NONE)
     {
         unit.SetDrag(1000000f);
-        unit.Stop();
+        unit.Stop(true);
         unit.SetAnimation((int)AnimationState.IDLE);
     }
 

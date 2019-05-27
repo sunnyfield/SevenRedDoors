@@ -23,7 +23,7 @@ public class ZombieController : AIUnit
         maxSpeed = 1.3f;
         healthPoints = 3;
         seeDistance = 5f;
-        attackDistance = 1f;
+        attackDistance = 0.4f;
         startPosition = transform.localPosition;
         SetState(idleState);
         behaviorState = passiveBehavior;
@@ -62,10 +62,8 @@ public class ZombieController : AIUnit
     {
         AIUpdate();
         unitState.StateUpdate(this);
-        Move();
+        Move();   
     }
-
-    private Vector2 VectorToPlayer() { return PlayerController.instance.transform.localPosition - transform.localPosition; }
 
     public void Attack()
     {

@@ -21,7 +21,7 @@ public class Passive : BaseAIBehaviorState
         {
             if (restRaitTimer > 0)
             {
-                //Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition);
+                Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition);
                 if (actorTransform.localPosition.x <= zombie.leftBorder) move = MoveInput.RIGHT;
                 else if (actorTransform.localPosition.x >= zombie.rightBorder) move = MoveInput.LEFT;
                 restRaitTimer -= Time.deltaTime;

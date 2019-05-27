@@ -15,7 +15,7 @@ public class AIAttack : BaseAIBehaviorState
         VectorToTarget();
         if ((Mathf.Abs(vectorToTarget.x) <= zombie.attackDistance) && (Mathf.Abs(vectorToTarget.y) < zombie.yThreshold))
         {
-            //Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition, Color.red);
+            Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition, Color.red);
             if (actorTransform.right.x * vectorToTarget.x < 0) zombie.Flip();
             zombie.HandleInput(MoveInput.NONE, ActionInput.FIRE);
             return null;

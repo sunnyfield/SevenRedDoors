@@ -26,7 +26,7 @@ public class BaseState : IState
 {
     protected const string name = "base";
 
-    public virtual IState HandleInput(UnitScript actor, MoveInput move, ActionInput action) { Debug.Log(actor.GetType() + " base HandleInput called"); return null; }
+    public virtual IState HandleInput(UnitScript actor, MoveInput move, ActionInput action) { /*Debug.Log(actor.GetType() + " base HandleInput called");*/ return null; }
     public virtual IState HandleInput(PlayerController actor, MoveInput move, ActionInput action) { return HandleInput(actor as UnitScript, move, action); }
     public virtual IState HandleInput(ZombieController actor, MoveInput move, ActionInput action) { return HandleInput(actor as UnitScript, move, action); }
     public virtual IState HandleInput(ZombieBigController actor, MoveInput move, ActionInput action) { return HandleInput(actor as UnitScript, move, action); }

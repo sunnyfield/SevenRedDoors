@@ -189,32 +189,6 @@ public class PlayerController : UnitScript
         }
     }
 
-    protected override void Move()
-    {
-        if (unitState == runState || unitState == jumpState)
-        {
-            if (transform.right.x * sideHorizontal < 0) Flip();
-
-            if (sideHorizontal != 0)
-            {
-                if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
-                {
-                    moveVector.x += moveIncrement * sideHorizontal;
-                    moveIncrement *= 2f;
-                }
-                else moveVector.x = sideHorizontal * maxSpeed;
-            }
-            else
-            {
-                moveVector.x = 0f;
-                moveIncrement = 0.1f;
-            }
-            moveVector.y = rigidBodyUnit2d.velocity.y;
-
-            rigidBodyUnit2d.velocity = moveVector;
-        }
-    }
-
     public void ReloadAnimationStart() { StartCoroutine(ReloadAnimation()); }
 
     public bool AddAmmo()
