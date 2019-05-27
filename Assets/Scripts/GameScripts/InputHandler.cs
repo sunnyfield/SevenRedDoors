@@ -5,12 +5,15 @@ using UnityEngine.EventSystems;
 
 public class InputHandler : MonoBehaviour
 {
+    public static InputHandler instance;
+
     private PlayerController player;
     public EventTrigger buttonRight;
     public EventTrigger buttonLeft;
     public EventTrigger buttonJump;
     public EventTrigger buttonFire;
     public EventTrigger buttonReload;
+    public EventTrigger buttonInteract;
 
     MoveInput move = MoveInput.NONE;
     ActionInput action = ActionInput.NONE;
@@ -19,6 +22,8 @@ public class InputHandler : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
         //if (!instanced) instanced = true;
         //else Destroy(gameObject);
     }
@@ -50,28 +55,22 @@ public class InputHandler : MonoBehaviour
         entry.eventID = EventTriggerType.PointerDown;
         entry.callback.AddListener(delegate { action = ActionInput.JUMP; });
         buttonJump.triggers.Add(entry);
-        entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerUp;
-        entry.callback.AddListener(delegate { action = ActionInput.NONE; });
-        buttonJump.triggers.Add(entry);
 
         entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerDown;
         entry.callback.AddListener(delegate { action = ActionInput.FIRE; });
-        buttonFire.triggers.Add(entry);
-        entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerUp;
-        entry.callback.AddListener(delegate { action = ActionInput.NONE; });
         buttonFire.triggers.Add(entry);
 
         entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerDown;
         entry.callback.AddListener(delegate { action = ActionInput.RELOAD; });
         buttonReload.triggers.Add(entry);
+
         entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerUp;
-        entry.callback.AddListener(delegate { action = ActionInput.NONE; });
-        buttonReload.triggers.Add(entry);
+        entry.eventID = EventTriggerType.PointerDown;
+        entry.callback.AddListener(delegate { action = ActionInput.ACTIVATE; });
+        buttonInteract.triggers.Add(entry);
+        buttonInteract.gameObject.SetActive(false);
     }
 
     void Update()
@@ -79,6 +78,16 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) GameController.instance.PauseToggle();
 
         HandlePlayerInput(player);
+    }
+
+    public void ActivateInteractiveButton()
+    {
+        buttonInteract.gameObject.SetActive(true);
+    }
+
+    public void DeactivateInteractiveButton()
+    {
+        buttonInteract.gameObject.SetActive(false);
     }
 
     private void HandlePlayerInput(PlayerController player)
@@ -93,5 +102,6 @@ public class InputHandler : MonoBehaviour
         //else if (Input.GetKeyDown(KeyCode.E)) action = ActionInput.ACTIVATE;
 
         player.HandleInput(move, action);
+        action = ActionInput.NONE;
     }
 }

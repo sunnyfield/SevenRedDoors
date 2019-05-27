@@ -41,8 +41,10 @@ public class InteractiveTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
             if (activateRoutine == null)
             {
+                collision.GetComponent<PlayerController>().trigger = this;
                 icon.gameObject.SetActive(true);
                 activateRoutine = StartCoroutine(Activate());
+                InputHandler.instance.ActivateInteractiveButton();
             }
     }
 
@@ -50,6 +52,8 @@ public class InteractiveTrigger : MonoBehaviour
     {
         if (activateRoutine != null)
         {
+            collision.GetComponent<PlayerController>().trigger = null;
+            InputHandler.instance.DeactivateInteractiveButton();
             StopCoroutine(activateRoutine);
             activateRoutine = null;
             icon.gameObject.SetActive(false);
@@ -69,18 +73,14 @@ public class InteractiveTrigger : MonoBehaviour
 
             icon.localScale = Vector3.Lerp(icon.localScale, targetIconScale, Time.deltaTime * 5f);
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                TurnOn();
-                boxTrigger.enabled = false;
-            }
             yield return null;
         }    
     }
 
-    private void TurnOn()
+    public void TurnOn()
     {
         spriteRenderer.sprite = spriteON;
+        boxTrigger.enabled = false;
         interfaceToActivate.Activate();
     }
 }

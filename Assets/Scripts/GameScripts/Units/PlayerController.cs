@@ -67,6 +67,7 @@ public class PlayerController : UnitScript
     [SerializeField]
     private Vector3 respawnPosition;
     private GameObject boxRef;
+    public InteractiveTrigger trigger;
     [HideInInspector]
     private List<GameObject> currentGround = new List<GameObject>();
 
