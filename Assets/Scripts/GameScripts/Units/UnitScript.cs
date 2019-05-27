@@ -30,6 +30,7 @@ public class UnitScript : MonoBehaviour, ICanDie
     public readonly Bounce bounceState = new Bounce();
 
     protected float moveIncrement = 0.1f;
+    protected float moveSpeed = 0f;
 
     protected float maxSpeed = 4.5f;
     protected float lerpSpeed = 20f;
@@ -116,19 +117,12 @@ public class UnitScript : MonoBehaviour, ICanDie
     {
         if (unitState == runState || unitState == jumpState)
         {
-            if (transform.right.x * sideHorizontal < 0)
-            {
-                moveIncrement = 0.1f;
-                Flip();
-            }
+            if (transform.right.x * sideHorizontal < 0) Flip();
 
-            if (Mathf.Abs(moveVector.x) < Mathf.Abs(sideHorizontal * maxSpeed))
-            {
-                moveVector.x += moveIncrement * sideHorizontal;
-                moveIncrement *= 2f;
-            }
-            else moveVector.x = sideHorizontal * maxSpeed;
+            if (moveSpeed < maxSpeed) moveSpeed = (moveSpeed + 0.1f) * 2;
+            else moveSpeed = maxSpeed;
 
+            moveVector.x = sideHorizontal * moveSpeed;
             moveVector.y = rigidBodyUnit2d.velocity.y;
 
             rigidBodyUnit2d.velocity = moveVector;
@@ -159,12 +153,10 @@ public class UnitScript : MonoBehaviour, ICanDie
         sideHorizontal = -1;
     }
 
-    public void Stop(bool resetIncrement)
+    public void Stop(bool resetSpeed)
     {
         sideHorizontal = 0;
-        if (resetIncrement) moveIncrement = 0.1f;
-        moveVector.x = 0f;
-        rigidBodyUnit2d.velocity = new Vector2(0f, rigidBodyUnit2d.velocity.y);
+        if (resetSpeed) moveSpeed = 0f;
     }
 
     public void SetDrag(float drag) { rigidBodyUnit2d.drag = drag; }

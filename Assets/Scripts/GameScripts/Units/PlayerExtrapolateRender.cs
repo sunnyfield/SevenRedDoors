@@ -16,7 +16,7 @@ public class PlayerExtrapolateRender : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (rb2d.velocity.magnitude > 0.01f) spriteObject.localPosition = rb2d.velocity * (Time.time - Time.fixedTime) + new Vector2(0.48f, 0f);
-        else spriteObject.localPosition = new Vector2(0.48f, 0f);
+        /*if (rb2d.velocity.magnitude > 0.01f)*/ spriteObject.localPosition = rb2d.velocity * (Time.unscaledTime - Time.fixedUnscaledTime) + new Vector2(0.48f, 0f);
+        //else spriteObject.localPosition = new Vector2(0.48f, 0f);
     }
 }

@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
     public static CameraFollow instance;
     //private Transform target;
     private CapsuleCollider2D targetCollider;
+    private Transform targetPlayer;
     private Transform targetPoint;
     public Vector2 focusAreaSize;
     private Vector2 focusPosition;
@@ -132,6 +133,7 @@ public class CameraFollow : MonoBehaviour
     private void Start()
     {
         Camera camera = GetComponent<Camera>();
+        targetPlayer = PlayerController.instance.gameObject.transform;
         targetPoint = PlayerController.instance.gameObject.transform.GetChild(4);
         targetCollider = PlayerController.instance.GetComponent<CapsuleCollider2D>();
 
@@ -148,7 +150,7 @@ public class CameraFollow : MonoBehaviour
 
     private void Update()
     {
-        focusArea.Update(targetPoint.position);
+        focusArea.Update(targetPlayer.localPosition);
 
         focusPosition = focusArea.center + Vector2.up * verticalOffset;
 

@@ -20,11 +20,11 @@ public class ProjectilesMove : MonoBehaviour
         speed = 60f;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if(muzzleFlash == null) muzzleFlash = Pool.Pull(Group.VFX_Muzzle, transform.localPosition, transform.rotation, 0.3f);
 
-        transform.localPosition += transform.right * speed * Time.fixedDeltaTime;
+        transform.localPosition += transform.right * speed * Time.deltaTime;
 
         if (Mathf.Abs(transform.localPosition.x - startPosition.x) >= maxExistDistance)
         {

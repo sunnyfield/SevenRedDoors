@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 0.1f;
+        Time.timeScale = 1f;
 
         for (int i = 0; i < Pool.objectsToPool.Length; i++)
         {
