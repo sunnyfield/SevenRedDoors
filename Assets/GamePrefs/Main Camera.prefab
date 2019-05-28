@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  focusAreaSize: {x: 2, y: 2.5}
+  focusAreaSize: {x: 2, y: 2.2}
   bottomLeftCameraBorder: {fileID: 0}
   topRightCameraBorder: {fileID: 0}
   camLenght: 0

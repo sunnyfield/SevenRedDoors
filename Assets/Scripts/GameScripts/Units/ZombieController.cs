@@ -8,7 +8,9 @@ public class ZombieController : AIUnit
     private GameObject ground;
 
     [HideInInspector]
-    public float yThreshold = 0.65f;
+    public float yThresholdTop;
+    [HideInInspector]
+    public float yThresholdBottom;
     private bool inDamageRange;
     
 
@@ -18,11 +20,13 @@ public class ZombieController : AIUnit
     void Start()
     {
         UnitSetup();
+        yThresholdTop = 1.5f;
+        yThresholdBottom = -0.9f;
         leftBorder = -100f;
         rightBorder = 100f;
         maxSpeed = 1.3f;
         healthPoints = 3;
-        seeDistance = 5f;
+        seeDistance = 8f;
         attackDistance = 0.4f;
         startPosition = transform.localPosition;
         SetState(idleState);
@@ -73,8 +77,8 @@ public class ZombieController : AIUnit
 
     public void SetFollowSpeed()
     {
-        anim.SetFloat("runSpeed", 1.6f);
-        maxSpeed = 2.2f;
+        anim.SetFloat("runSpeed", 2.1f);
+        maxSpeed = 3f;
     }
     public void SetPassiveSpeed()
     {

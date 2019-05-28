@@ -17,11 +17,11 @@ public class Passive : BaseAIBehaviorState
     public override IBehavior StateUpdate(ZombieController zombie)
     {
         VectorToTarget();
-        if ((Mathf.Abs(vectorToTarget.x) >= zombie.seeDistance) || (Mathf.Abs(vectorToTarget.y) >= zombie.yThreshold))
+        if ((Mathf.Abs(vectorToTarget.x) >= zombie.seeDistance) || vectorToTarget.y < zombie.yThresholdBottom || vectorToTarget.y > zombie.yThresholdTop)
         {
             if (restRaitTimer > 0)
             {
-                Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition);
+                //Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition);
                 if (actorTransform.localPosition.x <= zombie.leftBorder) move = MoveInput.RIGHT;
                 else if (actorTransform.localPosition.x >= zombie.rightBorder) move = MoveInput.LEFT;
                 restRaitTimer -= Time.deltaTime;

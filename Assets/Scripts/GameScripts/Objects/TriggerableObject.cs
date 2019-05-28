@@ -11,12 +11,15 @@ public interface ITriggerable
 public class TriggerableObject : MonoBehaviour, ITriggerable
 {
     private Rigidbody2D platform;
+    private HingeJoint2D joint;
     private float rotationSpeed = 15f;
 
 
     private void Start()
     {
         platform = transform.GetChild(1).GetComponent<Rigidbody2D>();
+        joint = transform.GetChild(1).GetComponent<HingeJoint2D>();
+        joint.enabled = false;
         platform.bodyType = RigidbodyType2D.Static;
     }
 
@@ -29,6 +32,7 @@ public class TriggerableObject : MonoBehaviour, ITriggerable
     private IEnumerator TurnPlatform()
     {
         platform.bodyType = RigidbodyType2D.Dynamic;
+        joint.enabled = true;
 
         while (platform.rotation > 0.1f)
         {
@@ -38,5 +42,6 @@ public class TriggerableObject : MonoBehaviour, ITriggerable
 
         platform.rotation = 0;
         platform.bodyType = RigidbodyType2D.Static;
+        joint.enabled = false;
     }
 }

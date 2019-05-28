@@ -19,7 +19,7 @@ public class Idle : BaseState
         if (move != MoveInput.NONE) return player.runState;
         if (action == ActionInput.FIRE) return player.attackState;
         if (action == ActionInput.RELOAD) return player.reloadState;
-        if (action == ActionInput.ACTIVATE) player.trigger.TurnOn();
+        if (action == ActionInput.ACTIVATE) if(player.trigger != null) player.trigger.TurnOn();
 
         return null;
     }

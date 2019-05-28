@@ -67,9 +67,15 @@ public class InteractiveTrigger : MonoBehaviour
         while (true)
         {
             if (icon.localScale.x > 0.5f)
-                targetIconScale = new Vector3(0.15f, 0.15f, 1f);
+            {
+                targetIconScale.x = 0.15f;
+                targetIconScale.y = 0.15f;
+            }    
             else if (icon.localScale.x < 0.2f)
-                targetIconScale = new Vector3(0.55f, 0.55f, 1f);
+            {
+                targetIconScale.x = 0.55f;
+                targetIconScale.y = 0.55f;
+            }
 
             icon.localScale = Vector3.Lerp(icon.localScale, targetIconScale, Time.deltaTime * 5f);
 
