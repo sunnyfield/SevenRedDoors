@@ -115,7 +115,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 6200000, guid: 3d23c5765c3b79c49b88647916c74baa, type: 2}
-  m_Interpolate: 0
+  m_Interpolate: 2
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -142,6 +142,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 163840
   respawnPosition: {x: 0, y: 0, z: 0}
+  trigger: {fileID: 0}
   whatToHit:
     serializedVersion: 2
     m_Bits: 20992

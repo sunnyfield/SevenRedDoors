@@ -92,6 +92,8 @@ public class InputHandler : MonoBehaviour
 
     private void HandlePlayerInput(PlayerController player)
     {
+        //move = MoveInput.NONE;
+        //action = ActionInput.NONE;
 
         //if ((int)Input.GetAxisRaw("Horizontal") == 1) move = MoveInput.RIGHT;
         //else if ((int)Input.GetAxisRaw("Horizontal") == -1) move = MoveInput.LEFT;

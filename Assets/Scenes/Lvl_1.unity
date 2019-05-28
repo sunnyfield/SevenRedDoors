@@ -20750,6 +20750,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1342074516206716004, guid: 05d1a56f0b0559e42b591efa65c5fdde,
         type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 2011193800}
+    - target: {fileID: 1342074516206716004, guid: 05d1a56f0b0559e42b591efa65c5fdde,
+        type: 3}
       propertyPath: bottomLeftCameraBorder
       value: 
       objectReference: {fileID: 310430244}
@@ -27229,6 +27234,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1958497948144402276, guid: c1628a6ecca2a03448617e514fd06603,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1628a6ecca2a03448617e514fd06603, type: 3}

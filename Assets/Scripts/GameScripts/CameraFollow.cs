@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public static CameraFollow instance;
-    //private Transform target;
+    public Transform target;
     private CapsuleCollider2D targetCollider;
     private Transform targetPlayer;
     private Transform targetPoint;
@@ -39,10 +39,62 @@ public class CameraFollow : MonoBehaviour
     private float recoil;
 
 
+    private struct DeadZone
+    {
+        private Transform character;
+        private Transform sprite;
+        public Vector2 center;
+        private Vector2 size;
+        private Vector2 offset;
+        public Vector2 cameraTarget;
+        private float lookAhead;
+        private float left;
+        private float right;
+        private float top;
+        private float bottom;
+
+        public DeadZone(Transform character_, Transform sprite_, Vector2 size_, float lookAhead_)
+        {
+            sprite = sprite_;
+            offset = Vector2.zero;
+            character = character_;
+            center = character.localPosition;
+            size = size_;
+            lookAhead = lookAhead_;
+            cameraTarget.x = center.x + lookAhead * character.right.x;
+            cameraTarget.y = center.y;
+
+            left = center.x - size.x;
+            right = center.x + size.x;
+            top = center.y + size.y;
+            bottom = center.y - size.y;
+        }
+
+        public void ZoneUpdate()
+        {
+            if (character.localPosition.x < left) offset.x = character.localPosition.x - left;
+            else if (character.localPosition.x > right) offset.x = character.localPosition.x - right;
+            if (character.localPosition.y < bottom) offset.y = character.localPosition.y - bottom;
+            else if (character.localPosition.y > top) offset.y = character.localPosition.y - top;
+
+            center += offset;
+            offset = Vector2.zero;
+            cameraTarget.x = center.x + lookAhead * character.right.x;
+            cameraTarget.y = center.y;
+
+            left = center.x - size.x;
+            right = center.x + size.x;
+            top = center.y + size.y;
+            bottom = center.y - size.y;
+        }
+    }
+
 
     private struct FocusArea
     {
+        public Transform character;
         public Vector2 center;
+        public Vector2 size;
         public Vector2 velocity;
         float left, right;
         float top, bottom;
@@ -58,8 +110,10 @@ public class CameraFollow : MonoBehaviour
         //    center = new Vector2((left + right) / 2f, (top + bottom) / 2f);
         //}
 
-        public FocusArea(Vector2 size)
+        public FocusArea(Transform character_, Vector2 size_)
         {
+            character = character_;
+            size = size_;
             left = -size.x / 2f;
             right = size.x / 2f;
             bottom = -size.y / 2f;
@@ -99,8 +153,10 @@ public class CameraFollow : MonoBehaviour
             float shiftX = 0;
             float shiftY = 0;
 
-            if (targetPoint.x < left) shiftX = targetPoint.x - left;
-            else if (targetPoint.x > right) shiftX = targetPoint.x - right;
+            //left = center - size
+
+            if (targetPoint.x < left) velocity.x = targetPoint.x - left;
+            else if (targetPoint.x > right) velocity.x = targetPoint.x - right;
 
             left += shiftX;
             right += shiftX;
@@ -117,6 +173,7 @@ public class CameraFollow : MonoBehaviour
     }
 
     FocusArea focusArea;
+    DeadZone deadZone;
 
     private void Awake()
     {
@@ -134,10 +191,11 @@ public class CameraFollow : MonoBehaviour
     {
         Camera camera = GetComponent<Camera>();
         targetPlayer = PlayerController.instance.gameObject.transform;
-        targetPoint = PlayerController.instance.gameObject.transform.GetChild(4);
+        targetPoint = target.GetChild(4);
         targetCollider = PlayerController.instance.GetComponent<CapsuleCollider2D>();
 
-        focusArea = new FocusArea(focusAreaSize);
+        focusArea = new FocusArea(targetPlayer, focusAreaSize);
+        deadZone = new DeadZone(target, targetPoint, focusAreaSize/2, lookAheadDistanceHorizontal);
 
         camLenght = camera.ViewportToWorldPoint(new Vector3(1, 1, 1)).x - camera.ViewportToWorldPoint(new Vector3(0, 1, 1)).x;
         camHeight = camera.ViewportToWorldPoint(new Vector3(1, 1, 1)).y - camera.ViewportToWorldPoint(new Vector3(1, 0, 1)).y;
@@ -150,37 +208,42 @@ public class CameraFollow : MonoBehaviour
 
     private void Update()
     {
-        focusArea.Update(targetPlayer.localPosition);
+        //focusArea.Update(targetPlayer.localPosition);
+        deadZone.ZoneUpdate();
 
-        focusPosition = focusArea.center + Vector2.up * verticalOffset;
+        //focusPosition = deadZone.center + Vector2.up * verticalOffset;
 
-        focusAreaDistance += Mathf.Abs(focusArea.velocity.x);
+        //focusPosition = focusArea.center + Vector2.up * verticalOffset;
 
-        if (focusArea.velocity.x != 0f)
-        {
-            lookAheadDirectionHorizontal = Mathf.Sign(focusArea.velocity.x);
-            if (focusAreaDistance >= 0.6f)
-            {
-                lookAheadStop = false;
-                targetLookAheadHorizontal = lookAheadDirectionHorizontal * lookAheadDistanceHorizontal;
-            }
-            else
-            {
-                if (!lookAheadStop)
-                {
-                    lookAheadStop = true;
-                    targetLookAheadHorizontal = currentLookAheadHorizontal + (lookAheadDirectionHorizontal * lookAheadDistanceHorizontal - currentLookAheadHorizontal) / 4f;
-                }
+        //focusAreaDistance += Mathf.Abs(focusArea.velocity.x);
 
-            }
-        }
-        else if (PlayerController.instance.sideHorizontal == 0f)
-            focusAreaDistance = 0f;
+        //if (focusArea.velocity.x != 0f)
+        //{
+        //    lookAheadDirectionHorizontal = Mathf.Sign(focusArea.velocity.x);
+        //    if (focusAreaDistance >= 0.6f)
+        //    {
+        //        lookAheadStop = false;
+        //        targetLookAheadHorizontal = lookAheadDirectionHorizontal * lookAheadDistanceHorizontal;
+        //    }
+        //    else
+        //    {
+        //        if (!lookAheadStop)
+        //        {
+        //            lookAheadStop = true;
+        //            targetLookAheadHorizontal = currentLookAheadHorizontal + (lookAheadDirectionHorizontal * lookAheadDistanceHorizontal - currentLookAheadHorizontal) / 4f;
+        //        }
 
-        currentLookAheadHorizontal = Mathf.SmoothDamp(currentLookAheadHorizontal, targetLookAheadHorizontal, ref smoothLookVelocityHorizontal, lookAheadSmoothTimeHorizontal);
+        //    }
+        //}
+        //else if (PlayerController.instance.sideHorizontal == 0f)
+        //    focusAreaDistance = 0f;
 
-        focusPosition.y = Mathf.SmoothDamp(transform.position.y, focusPosition.y, ref smoothVelocityVertical, smoothTimeVertical);
-        focusPosition += Vector2.right * currentLookAheadHorizontal;
+        //currentLookAheadHorizontal = Mathf.SmoothDamp(currentLookAheadHorizontal, targetLookAheadHorizontal, ref smoothLookVelocityHorizontal, lookAheadSmoothTimeHorizontal);
+
+        //focusPosition.y = Mathf.SmoothDamp(transform.position.y, focusPosition.y, ref smoothVelocityVertical, smoothTimeVertical);
+        focusPosition.x = Mathf.SmoothDamp(transform.localPosition.x, deadZone.cameraTarget.x, ref smoothLookVelocityHorizontal, lookAheadSmoothTimeHorizontal);
+        focusPosition.y = Mathf.SmoothDamp(transform.localPosition.y, deadZone.cameraTarget.y, ref smoothVelocityVertical, smoothTimeVertical);
+        //focusPosition += Vector2.right * currentLookAheadHorizontal;
     }
 
     private void LateUpdate()
@@ -199,7 +262,11 @@ public class CameraFollow : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
-        Gizmos.DrawCube(focusArea.center, focusAreaSize);
+        //Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
+        //Gizmos.DrawCube(focusArea.center + (Vector2)transform.localPosition, focusAreaSize);
+        Gizmos.color = new Color(0f, 1f, 0f, 0.3f);
+        Gizmos.DrawCube(deadZone.center, focusAreaSize);
+        Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
+        Gizmos.DrawSphere(deadZone.cameraTarget, 0.2f);
     }
 }

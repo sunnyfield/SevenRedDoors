@@ -115,6 +115,10 @@ public class PlayerController : UnitScript
     private void FixedUpdate()
     {
         Move();
+    }
+
+    private void Update()
+    {
         unitState.StateUpdate(this);
     }
 

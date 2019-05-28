@@ -96,7 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ebc9d79325664349b702fd13081fa84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focusAreaSize: {x: 4, y: 2.5}
+  target: {fileID: 0}
+  focusAreaSize: {x: 2, y: 2.5}
   bottomLeftCameraBorder: {fileID: 0}
   topRightCameraBorder: {fileID: 0}
   camLenght: 0
