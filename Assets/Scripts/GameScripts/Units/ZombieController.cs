@@ -26,8 +26,8 @@ public class ZombieController : AIUnit
         rightBorder = 100f;
         maxSpeed = 1.3f;
         healthPoints = 3;
-        seeDistance = 8f;
-        attackDistance = 0.4f;
+        seeDistance = 4.5f;
+        attackDistance = 0.5f;
         startPosition = transform.localPosition;
         SetState(idleState);
         behaviorState = passiveBehavior;

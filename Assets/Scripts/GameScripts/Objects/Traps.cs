@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Traps : MonoBehaviour
 {
-    public enum TrapType { Saw, Arrow };
+    public enum TrapType { Saw, Arrow, Platform };
     public TrapType currentTrapType;
     private Rigidbody2D rigidbodySaw;
+    private Rigidbody2D platformRB2D;
+    private HingeJoint2D platformJoint;
     private Vector2 moveDirectionSaw;
     private Vector2 moveDirectionArrow;
     private Transform arrowPoint;
@@ -26,6 +28,9 @@ public class Traps : MonoBehaviour
             case (TrapType.Arrow):
                 ArrowSetup();
                 break;
+            case TrapType.Platform:
+                PlatformSetup();
+                break;
             default:
                 break;
         }
@@ -39,14 +44,19 @@ public class Traps : MonoBehaviour
     }
 
     private void ArrowSetup()
-    {
-        
+    { 
         arrowPoint = transform.GetChild(0);
         arrowRB2D = transform.GetChild(1).gameObject.GetComponent<Rigidbody2D>();
         arrowTransform = transform.GetChild(1);
         moveDirectionArrow = (arrowPoint.position - arrowTransform.position).normalized * arrowSpeed;
         arrowRB2D.velocity = moveDirectionArrow;
         trapTimer = Random.Range(0.2f, 1.2f);
+    }
+
+    private void PlatformSetup()
+    {
+        platformRB2D = gameObject.GetComponent<Rigidbody2D>();
+        platformJoint = gameObject.GetComponent<HingeJoint2D>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -59,6 +69,28 @@ public class Traps : MonoBehaviour
             default:
                 break;
         } 
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        switch (currentTrapType)
+        {
+            case (TrapType.Platform):
+                if (collision.gameObject.layer == (int)Layer.Player) Invoke("ActivatePlatform", 1f);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ActivatePlatform()
+    {
+        if (platformJoint != null && platformRB2D != null)
+        {
+            platformJoint.enabled = true;
+            platformRB2D.bodyType = RigidbodyType2D.Dynamic;
+            Destroy(gameObject, 2f);
+        }
     }
 
     private void FixedUpdate()

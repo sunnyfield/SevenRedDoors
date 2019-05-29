@@ -17,7 +17,7 @@ public class Passive : BaseAIBehaviorState
     public override IBehavior StateUpdate(ZombieController zombie)
     {
         VectorToTarget();
-        if ((Mathf.Abs(vectorToTarget.x) >= zombie.seeDistance) || vectorToTarget.y < zombie.yThresholdBottom || vectorToTarget.y > zombie.yThresholdTop)
+        if ((Mathf.Abs(vectorToTarget.x) >= zombie.seeDistance) || vectorToTarget.y <= zombie.yThresholdBottom || vectorToTarget.y >= zombie.yThresholdTop)
         {
             if (restRaitTimer > 0)
             {

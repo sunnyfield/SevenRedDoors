@@ -323,7 +323,7 @@ public class CameraFollow : MonoBehaviour
 
     public IEnumerator RecoilRoutine()
     {
-        recoil = -target.transform.right.x * 0.01f;
+        recoil = -target.transform.right.x * 0.1f;
         yield return null;
         recoil = 0f;
     }

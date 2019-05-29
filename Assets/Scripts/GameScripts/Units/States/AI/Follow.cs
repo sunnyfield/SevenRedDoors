@@ -15,15 +15,21 @@ public class Follow : BaseAIBehaviorState
 
     public override IBehavior StateUpdate(ZombieController zombie)
     {
-        VectorToTarget();  
-        if ((Mathf.Abs(vectorToTarget.x) < zombie.seeDistance) && (vectorToTarget.y > zombie.yThresholdBottom && vectorToTarget.y < zombie.yThresholdTop))
+        VectorToTarget();
+        float vectorAbsX = Mathf.Abs(vectorToTarget.x);
+        if ((vectorAbsX < zombie.seeDistance) && (vectorToTarget.y > zombie.yThresholdBottom && vectorToTarget.y < zombie.yThresholdTop))
         {
-            if (Mathf.Abs(vectorToTarget.x) > zombie.attackDistance)
+            if (vectorAbsX > zombie.attackDistance || Mathf.Abs(vectorToTarget.y) > 0.1)
             {
                 //Debug.DrawLine(actorTransform.localPosition, vectorToTarget + (Vector2)actorTransform.localPosition, Color.yellow);
-                if (actorTransform.right.x * vectorToTarget.x < 0) move = (MoveInput)(-actorTransform.right.x);
-                else if (actorTransform.localPosition.x <= zombie.leftBorder && move < 0) move = MoveInput.NONE;
-                else if (actorTransform.localPosition.x >= zombie.rightBorder && move > 0) move = MoveInput.NONE;
+                if (vectorAbsX > 0.1)
+                {
+                    move = (MoveInput)actorTransform.right.x;
+                    if (actorTransform.right.x * vectorToTarget.x < 0) move = (MoveInput)(-actorTransform.right.x);
+                    else if (actorTransform.localPosition.x <= zombie.leftBorder && move < 0) move = MoveInput.NONE;
+                    else if (actorTransform.localPosition.x >= zombie.rightBorder && move > 0) move = MoveInput.NONE;
+                }
+                else move = MoveInput.NONE;
 
                 zombie.HandleInput(move, ActionInput.NONE);
                 return null;

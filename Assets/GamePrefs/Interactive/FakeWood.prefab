@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 20546181533746003}
   - component: {fileID: 20546181533746002}
   - component: {fileID: 20546181533746005}
+  - component: {fileID: 7218977878275410797}
   - component: {fileID: 20546181533746004}
   m_Layer: 9
   m_Name: FakeWood
@@ -129,6 +130,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 4.5, y: 0.81}
   m_EdgeRadius: 0
+--- !u!114 &7218977878275410797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20546181533746007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11d6b9cb6c9be684b9ddf8cff4831722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTrapType: 2
 --- !u!233 &20546181533746004
 HingeJoint2D:
   m_ObjectHideFlags: 0
@@ -144,7 +158,7 @@ HingeJoint2D:
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 0
   m_Anchor: {x: -2.2, y: 0}
-  m_ConnectedAnchor: {x: -21.266, y: 0.664}
+  m_ConnectedAnchor: {x: -8.5114, y: 2.42}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0

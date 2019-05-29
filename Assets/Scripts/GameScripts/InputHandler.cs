@@ -92,17 +92,18 @@ public class InputHandler : MonoBehaviour
 
     private void HandlePlayerInput(PlayerController player)
     {
-        //move = MoveInput.NONE;
-        //action = ActionInput.NONE;
+#if UNITY_EDITOR
+        move = MoveInput.NONE;
+        action = ActionInput.NONE;
 
-        //if ((int)Input.GetAxisRaw("Horizontal") == 1) move = MoveInput.RIGHT;
-        //else if ((int)Input.GetAxisRaw("Horizontal") == -1) move = MoveInput.LEFT;
+        if ((int)Input.GetAxisRaw("Horizontal") == 1) move = MoveInput.RIGHT;
+        else if ((int)Input.GetAxisRaw("Horizontal") == -1) move = MoveInput.LEFT;
 
-        //if (Input.GetButtonDown("Jump")) action = ActionInput.JUMP;
-        //else if (Input.GetKeyDown(KeyCode.F)) action = ActionInput.FIRE;
-        //else if (Input.GetKeyDown(KeyCode.R)) action = ActionInput.RELOAD;
-        //else if (Input.GetKeyDown(KeyCode.E)) action = ActionInput.ACTIVATE;
-
+        if (Input.GetButtonDown("Jump")) action = ActionInput.JUMP;
+        else if (Input.GetKeyDown(KeyCode.F)) action = ActionInput.FIRE;
+        else if (Input.GetKeyDown(KeyCode.R)) action = ActionInput.RELOAD;
+        else if (Input.GetKeyDown(KeyCode.E)) action = ActionInput.ACTIVATE;
+#endif
         player.HandleInput(move, action);
         action = ActionInput.NONE;
     }
