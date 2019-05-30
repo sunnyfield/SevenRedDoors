@@ -126,12 +126,10 @@ public class PlayerController : UnitScript
     {
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
-            if (collision.contacts[0].normal.y > 0.35f)
+            if (collision.GetContact(0).normal.y > 0.35f)
             {
-                if(currentGround[0] == null)
-                    currentGround[0] = collision.gameObject;
-                else
-                    currentGround.Add(collision.gameObject);
+                if (currentGround[0] == null) currentGround[0] = collision.gameObject;
+                else currentGround.Add(collision.gameObject);
 
                 if (unitState != bounceState)
                 {
@@ -155,9 +153,9 @@ public class PlayerController : UnitScript
             if (currentGround.Count == 1 && currentGround[0] == collision.gameObject)
             {
                 currentGround[0] = null;
-                if(unitState != bounceState) SetState(jumpState);
+                if (unitState != bounceState) SetState(jumpState);
             }
-            else currentGround.Remove(collision.gameObject);       
+            else if (currentGround.Count > 1) currentGround.Remove(collision.gameObject);
         }
         Profiler.EndSample();
     }
@@ -229,7 +227,7 @@ public class PlayerController : UnitScript
     private void Bounce(Collision2D collision)
     {
         SetState(bounceState);
-        ContactPoint2D point = collision.contacts[0];
+        ContactPoint2D point = collision.GetContact(0);
         Rigidbody2D rb2d = collision.gameObject.GetComponent<Rigidbody2D>();
         rigidBodyUnit2d.velocity += new Vector2(point.normal.x * 10f, rigidBodyUnit2d.velocity.y);
     }

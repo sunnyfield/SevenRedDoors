@@ -41,7 +41,7 @@ public class ZombieController : AIUnit
 
         if (whatIsGround == (whatIsGround | 1 << collision.gameObject.layer))
         {
-            if (collision.contacts[0].normal.y > 0.35f)
+            if (collision.GetContact(0).normal.y > 0.35f)
             {
                 ground = collision.gameObject;
                 size = ground.GetComponent<BoxCollider2D>().size.x;
@@ -51,10 +51,10 @@ public class ZombieController : AIUnit
             }
             else
             {
-                if ((collision.contacts[0].point - (Vector2)transform.localPosition).y < 0)
+                if ((collision.GetContact(0).point - (Vector2)transform.localPosition).y < 0)
                 {
-                    if (sideHorizontal == -1) leftBorder = collision.contacts[0].point.x + threshold;
-                    else if (sideHorizontal == 1) rightBorder = collision.contacts[0].point.x - threshold;
+                    if (sideHorizontal == -1) leftBorder = collision.GetContact(0).point.x + threshold;
+                    else if (sideHorizontal == 1) rightBorder = collision.GetContact(0).point.x - threshold;
                 }
             }
         } 

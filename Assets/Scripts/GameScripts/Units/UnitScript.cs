@@ -129,10 +129,7 @@ public class UnitScript : MonoBehaviour, ICanDie
         }
     }
 
-    public void Flip()
-    {
-        transform.localRotation *= Quaternion.Euler(Vector3.up * 180);
-    }
+    public void Flip() { transform.localRotation *= Quaternion.Euler(Vector3.up * 180); }
 
     private void GroundCheck()
     {
