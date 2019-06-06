@@ -86,8 +86,11 @@ TagManager:
   - name: PlatformBehind
     uniqueID: 3191458927
     locked: 0
-  - name: Ground
+  - name: GroundL1
     uniqueID: 3676523929
+    locked: 0
+  - name: GroundL2
+    uniqueID: 1815001115
     locked: 0
   - name: PlatformInFront
     uniqueID: 2993247613
