@@ -24,8 +24,8 @@ public class MainMenuController : MonoBehaviour
         playButton = transform.Find("Button_Play").GetComponent<Button>();
         playButton.onClick.AddListener(() => SceneManager.LoadScene(1));
 
-        reloadButton = transform.Find("Button_Reload").GetComponent<Button>();
-        reloadButton.onClick.AddListener(() => SceneManager.LoadScene(2));
+        //reloadButton = transform.Find("Button_Reload").GetComponent<Button>();
+        //reloadButton.onClick.AddListener(() => SceneManager.LoadScene(2));
 
         quitButton = transform.Find("Button_Quit").GetComponent<Button>();
         quitButton.onClick.AddListener(() => Application.Quit());

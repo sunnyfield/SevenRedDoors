@@ -51,22 +51,13 @@ public class UIController : MonoBehaviour
         controlButtons = GameObject.Find("/Canvas/ControlButtons");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void HealthBarDecrease()
     {
         healthBar.fillAmount -= 0.333f;
         DamageTakeEffect();
     }
 
-    public void HealthBarIncrease()
-    {
-        healthBar.fillAmount += 0.333f;
-    }
+    public void HealthBarIncrease() { healthBar.fillAmount += 0.333f; }
 
     public void HealthBarOnZero()
     {
@@ -76,8 +67,7 @@ public class UIController : MonoBehaviour
 
     private void DamageTakeEffect()
     {
-        if (damageTakeVingetteRoutine == null)
-            damageTakeVingetteRoutine = StartCoroutine(DamageTakeVingetteFade());
+        if (damageTakeVingetteRoutine == null) damageTakeVingetteRoutine = StartCoroutine(DamageTakeVingetteFade());
         else
         {
             StopCoroutine(damageTakeVingetteRoutine);
@@ -87,33 +77,30 @@ public class UIController : MonoBehaviour
 
     private IEnumerator DamageTakeVingetteFade()
     {
+        bool isFading = false;
         damageTakeVingette.gameObject.SetActive(true);
 
-        yield return StartCoroutine(AlphaToOne());
-        yield return StartCoroutine(AlphaToZero());
+        damageTakeVingette.color = new Color(1f, 1f, 1f, 0.1f);
 
-        damageTakeVingette.gameObject.SetActive(false);
-        damageTakeVingetteRoutine = null;
-    }
-
-    private IEnumerator AlphaToOne()
-    {
-        while (damageTakeVingette.color.a <= 0.3)
-        {
-            damageTakeVingette.color = Color.Lerp(damageTakeVingette.color, Color.white, Time.deltaTime * 25f);
-            yield return null;
-        }
-        damageTakeVingette.color = Color.white;
-    }
-
-    private IEnumerator AlphaToZero()
-    {
         while (damageTakeVingette.color.a >= 0.05)
         {
-            damageTakeVingette.color = Color.Lerp(damageTakeVingette.color, Color.clear, Time.deltaTime * 5f);
-            yield return null;
+            if (isFading)
+            {
+                damageTakeVingette.color = Color.Lerp(damageTakeVingette.color, Color.clear, Time.deltaTime * 2f);
+                yield return null;
+            }
+            else
+            {
+                if (damageTakeVingette.color.a > 0.3) isFading = true;
+
+                damageTakeVingette.color = Color.Lerp(damageTakeVingette.color, Color.white, Time.deltaTime * 2f);
+                yield return null;
+            }
         }
+
         damageTakeVingette.color = Color.clear;
+        damageTakeVingette.gameObject.SetActive(false);
+        damageTakeVingetteRoutine = null;
     }
 
     public void AmmoBarDecrease() { ammoBar.fillAmount -= 0.2f; }
