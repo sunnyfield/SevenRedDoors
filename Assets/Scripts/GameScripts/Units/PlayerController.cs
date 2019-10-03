@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts;
 using GameScripts.Pool;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -179,7 +180,7 @@ public class PlayerController : UnitScript
                 PickUpKey(collision.gameObject);
                 break;
             case (int)Layer.RedDoor:
-                GameController.instance.GameWinCheck();
+                GameController.Instance.GameWinCheck();
                 break;
             case (int)Layer.BottomLevelLimit:
                 TakeDamage();
@@ -317,13 +318,13 @@ public class PlayerController : UnitScript
 
     private void PickUpCoin(GameObject coin)
     {
-        GameController.instance.CoinIncrease();
+        GameController.Instance.CoinIncrease();
         Destroy(coin);
     }
 
     private void PickUpKey(GameObject key)
     {
-        GameController.instance.GetKey();
+        GameController.Instance.GetKey();
         Destroy(key);
     }
 
@@ -352,7 +353,7 @@ public class PlayerController : UnitScript
     {
         healthPoints = 0;
         gameObject.SetActive(false);
-        GameController.instance.GameOver();
+        GameController.Instance.GameOver();
     }
 
     public void SetState(IState state)

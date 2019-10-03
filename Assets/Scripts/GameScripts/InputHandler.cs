@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -75,7 +76,7 @@ public class InputHandler : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) GameController.instance.PauseToggle();
+        if (Input.GetKeyDown(KeyCode.Escape)) GameController.Instance.PauseToggle();
 
         HandlePlayerInput(player);
     }

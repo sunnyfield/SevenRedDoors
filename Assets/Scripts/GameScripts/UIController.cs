@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -37,9 +38,9 @@ public class UIController : MonoBehaviour
         keyImage = GameObject.Find("/Canvas/KeyFlag");
         keyImage.SetActive(false);
         coinCountText = GameObject.Find("/Canvas/CountCoin").GetComponent<Text>();
-        coinCountText.text = GameController.instance.CoinCount.ToString();
+        coinCountText.text = GameController.Instance.CoinCount.ToString();
         restartButton = GameObject.Find("/Canvas/PausePanel/Restart").GetComponent<Button>();
-        restartButton.onClick.AddListener(() => GameController.instance.Restart());
+        restartButton.onClick.AddListener(() => GameController.Instance.Restart());
         quitButton = GameObject.Find("/Canvas/PausePanel/MainMenu").GetComponent<Button>();
         quitButton.onClick.AddListener(() => SceneManager.LoadScene(0));
         pausePanel = GameObject.Find("/Canvas/PausePanel");
@@ -109,7 +110,7 @@ public class UIController : MonoBehaviour
 
     public void GetKey() { keyImage.SetActive(true); }
 
-    public void CoinIncrease() { coinCountText.text = GameController.instance.CoinCount.ToString(); }
+    public void CoinIncrease() { coinCountText.text = GameController.Instance.CoinCount.ToString(); }
 
     public void WinScreen()
     {

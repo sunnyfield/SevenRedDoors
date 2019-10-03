@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace GameScripts.Pool
@@ -21,9 +24,14 @@ namespace GameScripts.Pool
         public readonly Group Group;
         public readonly int InitialPoolSize;
 
-        public PoolableObject(GameObject prefab, Group @group, int initialPoolSize)
+        public PoolableObject([NotNull] GameObject prefab, Group @group, int initialPoolSize)
         {
-            Prefab = prefab;
+            if (!Enum.IsDefined(typeof(Group), @group))
+            {
+                throw new InvalidEnumArgumentException(nameof(@group), (int) @group, typeof(Group));
+            }
+
+            Prefab = prefab ? prefab : throw new ArgumentNullException(nameof(prefab));
             Group = @group;
             InitialPoolSize = initialPoolSize;
         }
