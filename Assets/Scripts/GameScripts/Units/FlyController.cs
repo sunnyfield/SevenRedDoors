@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 
 public class FlyController : UnitScript
@@ -136,7 +137,7 @@ public class FlyController : UnitScript
                 {
                     anim.SetTrigger("shoot");
                     
-                    Pool.Pull(Group.Fireball, firePoint.position, firePoint.rotation);
+                    Pool.Pull(Group.FIREBALL, firePoint.position, firePoint.rotation);
                     timer = 0;
                 }
             }
@@ -225,7 +226,7 @@ public class FlyController : UnitScript
         if (healthPoints != 0)
         {
             healthPoints = 0;
-            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_BLOOD_EXPLOSION, transform.position, Quaternion.identity, 1.5f);
             Destroy(gameObject);
         }
     }

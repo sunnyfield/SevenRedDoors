@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,10 +27,10 @@ public class GameController : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        for (int i = 0; i < Pool.objectsToPool.Length; i++)
+        for (int i = 0; i < Pool.ObjectsToPool.Length; i++)
         {
             var poolable = new PoolableObject(poolablePrefabs[i], (Group)i, 5);
-            Pool.objectsToPool[i] = poolable;
+            Pool.ObjectsToPool[i] = poolable;
         }
         Pool.CreatePools();
     }

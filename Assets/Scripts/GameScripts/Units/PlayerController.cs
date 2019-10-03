@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -273,7 +274,7 @@ public class PlayerController : UnitScript
 
         CameraFollow.instance.Recoil();
 
-        projectileClone = Pool.Pull(Group.Projectile, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
+        projectileClone = Pool.Pull(Group.PROJECTILE, firePoint.position, firePoint.rotation).GetComponent<ProjectilesMove>();
         if(projectileClone != null) projectileClone.maxExistDistance = projectileDist;
             
         gunCaseParticleSystem.Emit(1);
@@ -281,7 +282,7 @@ public class PlayerController : UnitScript
 
     private void BoxDestroy()
     {
-        Pool.Pull(Group.VFX_BoxCrush, boxRef.transform.position, Quaternion.identity, 1f);
+        Pool.Pull(Group.VFX_BOX_CRUSH, boxRef.transform.position, Quaternion.identity, 1f);
         Destroy(boxRef);
     }
 

@@ -2,146 +2,156 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Group {VFX_Meat, VFX_BloodExplosion, VFX_BoxCrush, Projectile, VFX_Muzzle, VFX_Hit, Fireball};
-
-public struct PoolableObject
+namespace GameScripts.Pool
 {
-    public GameObject prefab;
-    public Group group;
-    public int initialPoolSize;
-
-    public PoolableObject(GameObject prefab_, Group group_, int initialPoolSize_)
+    public enum Group
     {
-        prefab = prefab_;
-        group = group_;
-        initialPoolSize = initialPoolSize_;
-    }
-}
+        VFX_MEAT,
+        VFX_BLOOD_EXPLOSION,
+        VFX_BOX_CRUSH,
+        PROJECTILE,
+        VFX_MUZZLE,
+        VFX_HIT,
+        FIREBALL
+    };
 
-public class Pool : MonoBehaviour
-{
-    private static int groupCount = System.Enum.GetValues(typeof(Group)).Length;
-    private static Pool[] pools = new Pool[groupCount];
-
-    public static PoolableObject[] objectsToPool = new PoolableObject[groupCount];
-
-    private Queue<GameObject> objects = new Queue<GameObject>();
-    
-    private PoolableObject objectToPool;
-    
-    private int iterator = 0;
-
-    private Pool()
-    { }
-
-    public static Pool GetPool(Group group)
+    public struct PoolableObject
     {
-        return pools[(int)group];
-    }
+        public readonly GameObject Prefab;
+        public readonly Group Group;
+        public readonly int InitialPoolSize;
 
-    public static void CreatePools()
-    {
-        for (int i = 0; i < pools.Length; i++)
+        public PoolableObject(GameObject prefab, Group @group, int initialPoolSize)
         {
-            var pool = new GameObject("Pool_" + objectsToPool[i].group.ToString()).AddComponent<Pool>();
-            pool.objectToPool = objectsToPool[i];
-
-            pool.GrowPool();
-            pools[i] = pool;
+            Prefab = prefab;
+            Group = @group;
+            InitialPoolSize = initialPoolSize;
         }
     }
 
-    private void GrowPool()
+    public class Pool : MonoBehaviour
     {
-        for(int i = 0; i < objectToPool.initialPoolSize; i++)
+        private static readonly int _groupCount = System.Enum.GetValues(typeof(Group)).Length;
+        private static readonly Pool[] _pools = new Pool[_groupCount];
+
+        public static readonly PoolableObject[] ObjectsToPool = new PoolableObject[_groupCount];
+
+        private readonly Queue<GameObject> _objects = new Queue<GameObject>();
+    
+        private PoolableObject _objectToPool;
+    
+        private int _iterator;
+
+        private Pool() { }
+
+        public static Pool GetPool(Group group)
         {
-            AddObject();           
+            return _pools[(int)group];
         }
-    }
 
-    private void AddObject()
-    {
-        var pooledObject = Instantiate(objectToPool.prefab);
+        public static void CreatePools()
+        {
+            for (int i = 0; i < _pools.Length; i++)
+            {
+                var pool = new GameObject("Pool_" + ObjectsToPool[i].Group.ToString()).AddComponent<Pool>();
+                pool._objectToPool = ObjectsToPool[i];
 
-        pooledObject.name += "_" + iterator;
-        objects.Enqueue(pooledObject);
-        pooledObject.SetActive(false);
-        pooledObject.transform.SetParent(transform);
-        iterator++;
-    }
+                pool.GrowPool();
+                _pools[i] = pool;
+            }
+        }
 
-    public static GameObject Pull(Group group, bool enable = true)
-    {
-        var pool = GetPool(group);
-        if (pool.objects.Count == 0)
-            pool.AddObject();
+        private void GrowPool()
+        {
+            for(int i = 0; i < _objectToPool.InitialPoolSize; i++)
+            {
+                AddObject();           
+            }
+        }
 
-        var pooledObject = pool.objects.Dequeue();
-        pooledObject.SetActive(enable);
-        return pooledObject;
-    }
+        private void AddObject()
+        {
+            var pooledObject = Instantiate(_objectToPool.Prefab, transform, true);
 
-    public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, bool enable = true)
-    {
-        var pool = GetPool(group);
-        if (pool.objects.Count == 0)
-            pool.AddObject();
+            pooledObject.name += "_" + _iterator;
+            _objects.Enqueue(pooledObject);
+            pooledObject.SetActive(false);
+            _iterator++;
+        }
 
-        var pooledObject = pool.objects.Dequeue();
-        pooledObject.transform.localPosition = position;
-        pooledObject.transform.localRotation = rotation;
-        pooledObject.SetActive(enable);
-        return pooledObject;
-    }
+        public static GameObject Pull(Group group, bool enable = true)
+        {
+            var pool = GetPool(group);
+            if (pool._objects.Count == 0)
+                pool.AddObject();
 
-    public static GameObject Pull(Group group, Transform parent, Vector3 relativePosition, Quaternion relativeRotation, bool enable = true)
-    {
-        var pool = GetPool(group);
-        if (pool.objects.Count == 0)
-            pool.AddObject();
+            var pooledObject = pool._objects.Dequeue();
+            pooledObject.SetActive(enable);
+            return pooledObject;
+        }
 
-        var pooledObject = pool.objects.Dequeue();
-        pooledObject.transform.SetParent(parent);
-        pooledObject.transform.localPosition = relativePosition;
-        pooledObject.transform.localRotation = relativeRotation;
-        pooledObject.SetActive(enable);
-        return pooledObject;
-    }
+        public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, bool enable = true)
+        {
+            var pool = GetPool(group);
+            if (pool._objects.Count == 0)
+                pool.AddObject();
 
-    public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, float existTime)
-    {
-        var pool = GetPool(group);
-        if (pool.objects.Count == 0)
-            pool.AddObject();
+            var pooledObject = pool._objects.Dequeue();
+            pooledObject.transform.localPosition = position;
+            pooledObject.transform.localRotation = rotation;
+            pooledObject.SetActive(enable);
+            return pooledObject;
+        }
 
-        var pooledObject = pool.objects.Dequeue();
-        pooledObject.transform.localPosition = position;
-        pooledObject.transform.localRotation = rotation;
-        pooledObject.SetActive(true);
+        public static GameObject Pull(Group group, Transform parent, Vector3 relativePosition, Quaternion relativeRotation, bool enable = true)
+        {
+            var pool = GetPool(group);
+            if (pool._objects.Count == 0)
+                pool.AddObject();
 
-        pool.StartCoroutine(pool.DelayedPushCoroutine(pooledObject, existTime));
-        return pooledObject;
-    }
+            var pooledObject = pool._objects.Dequeue();
+            pooledObject.transform.SetParent(parent);
+            pooledObject.transform.localPosition = relativePosition;
+            pooledObject.transform.localRotation = relativeRotation;
+            pooledObject.SetActive(enable);
+            return pooledObject;
+        }
 
-    public static void Push(Group group, GameObject objectToPool)
-    {
-        var pool = GetPool(group);
-        pool.objects.Enqueue(objectToPool);
-        objectToPool.SetActive(false);
-        objectToPool.transform.SetParent(pool.transform);
-    }
+        public static GameObject Pull(Group group, Vector3 position, Quaternion rotation, float existTime)
+        {
+            var pool = GetPool(group);
+            if (pool._objects.Count == 0)
+                pool.AddObject();
 
-    public static void Push(Group group, GameObject objectToPool, float delay)
-    {
-        var pool = GetPool(group);
-        pool.StartCoroutine(pool.DelayedPushCoroutine(objectToPool, delay));
-    }
+            var pooledObject = pool._objects.Dequeue();
+            pooledObject.transform.localPosition = position;
+            pooledObject.transform.localRotation = rotation;
+            pooledObject.SetActive(true);
 
-    IEnumerator DelayedPushCoroutine(GameObject objectToPool, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        objects.Enqueue(objectToPool);
-        objectToPool.SetActive(false);
-        objectToPool.transform.SetParent(transform);
+            pool.StartCoroutine(pool.DelayedPushCoroutine(pooledObject, existTime));
+            return pooledObject;
+        }
+
+        public static void Push(Group group, GameObject objectToPool)
+        {
+            var pool = GetPool(group);
+            pool._objects.Enqueue(objectToPool);
+            objectToPool.SetActive(false);
+            objectToPool.transform.SetParent(pool.transform);
+        }
+
+        public static void Push(Group group, GameObject objectToPool, float delay)
+        {
+            var pool = GetPool(group);
+            pool.StartCoroutine(pool.DelayedPushCoroutine(objectToPool, delay));
+        }
+
+        IEnumerator DelayedPushCoroutine(GameObject objectToPool, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            _objects.Enqueue(objectToPool);
+            objectToPool.SetActive(false);
+            objectToPool.transform.SetParent(transform);
+        }
     }
 }

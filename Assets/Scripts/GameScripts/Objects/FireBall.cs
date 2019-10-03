@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 
 public class FireBall : MonoBehaviour
@@ -17,11 +18,11 @@ public class FireBall : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.gameObject.GetComponent<PlayerController>().TakeDamage();
-            Pool.Push(Group.Fireball, gameObject);
+            Pool.Push(Group.FIREBALL, gameObject);
         }
         else if (collision.gameObject.CompareTag("Coins") || collision.gameObject.CompareTag("Health") || collision.gameObject.CompareTag("Keys"))
         { }
         else
-            Pool.Push(Group.Fireball, gameObject);
+            Pool.Push(Group.FIREBALL, gameObject);
     }
 }

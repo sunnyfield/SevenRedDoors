@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 
 public class ProjectilesMove : MonoBehaviour
@@ -22,7 +23,7 @@ public class ProjectilesMove : MonoBehaviour
 
     void Update()
     {
-        if(muzzleFlash == null) muzzleFlash = Pool.Pull(Group.VFX_Muzzle, transform.localPosition, transform.rotation, 0.3f);
+        if(muzzleFlash == null) muzzleFlash = Pool.Pull(Group.VFX_MUZZLE, transform.localPosition, transform.rotation, 0.3f);
 
         transform.localPosition += transform.right * speed * Time.deltaTime;
 
@@ -31,9 +32,9 @@ public class ProjectilesMove : MonoBehaviour
             transform.localPosition = transform.right * maxExistDistance + startPosition;
             speed = 0;
 
-            if (hitFlash == null) hitFlash = Pool.Pull(Group.VFX_Hit, transform.localPosition, transform.localRotation, 0.3f);
+            if (hitFlash == null) hitFlash = Pool.Pull(Group.VFX_HIT, transform.localPosition, transform.localRotation, 0.3f);
 
-            Pool.Push(Group.Projectile, gameObject, 0.1f);       
+            Pool.Push(Group.PROJECTILE, gameObject, 0.1f);       
         }
     }
 }

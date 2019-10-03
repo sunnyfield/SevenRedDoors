@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 
 public class ZombieBigController : UnitScript
@@ -200,8 +201,8 @@ public class ZombieBigController : UnitScript
         if (healthPoints != 0)
         {
             healthPoints = 0;
-            Pool.Pull(Group.VFX_BloodExplosion, transform.position, Quaternion.identity, 1.5f);
-            Pool.Pull(Group.VFX_Meat, transform.position - new Vector3(0.1f, 0.62f, 0f), Quaternion.identity);
+            Pool.Pull(Group.VFX_BLOOD_EXPLOSION, transform.position, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_MEAT, transform.position - new Vector3(0.1f, 0.62f, 0f), Quaternion.identity);
             Destroy(gameObject);
         }
     }

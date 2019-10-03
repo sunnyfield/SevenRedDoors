@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameScripts.Pool;
 using UnityEngine;
 
 public class ZombieController : AIUnit
@@ -91,8 +92,8 @@ public class ZombieController : AIUnit
         if (healthPoints != 0)
         {
             healthPoints = 0;     
-            Pool.Pull(Group.VFX_BloodExplosion, transform.localPosition, Quaternion.identity, 1.5f);
-            Pool.Pull(Group.VFX_Meat, transform.localPosition - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
+            Pool.Pull(Group.VFX_BLOOD_EXPLOSION, transform.localPosition, Quaternion.identity, 1.5f);
+            Pool.Pull(Group.VFX_MEAT, transform.localPosition - new Vector3(0.1f, 0.56f, 0f), Quaternion.identity);
             Destroy(gameObject);
         }
     }
